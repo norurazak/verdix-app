@@ -22,7 +22,7 @@ def get_database():
 
 # --- MAIN APP ---
 def main():
-    st.set_page_config(page_title="Verdix", page_icon="⚖️", layout="mobile")
+    st.set_page_config(page_title="Verdix", page_icon="⚖️", layout="centered")
     
     st.title("⚖️ Verdix")
     st.caption("Startup Pitching & Judging System")
