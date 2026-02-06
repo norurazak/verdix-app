@@ -15,7 +15,12 @@ def get_database():
         st.error("Secrets not found! Please add your JSON key to Streamlit Secrets.")
         st.stop()
     
-    creds_dict = st.secrets["gcp_service_account"]
+    # CONVERT TO DICT AND REPAIR THE KEY
+    creds_dict = dict(st.secrets["gcp_service_account"])
+    
+    # This line fixes the formatting error automatically:
+    creds_dict["private_key"] = creds_dict["private_key"].replace("\\n", "\n")
+    
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, SCOPE)
     client = gspread.authorize(creds)
     return client.open(SHEET_NAME)
