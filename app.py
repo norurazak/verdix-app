@@ -29,10 +29,6 @@ def get_database():
 # --- MAIN APP ---
 def main():
     st.set_page_config(page_title="Verdix", page_icon="⚖️", layout="centered")
-
-    --- ADD LOGO HERE ---
-    # This looks for "logo.png" inside your GitHub folder
-    # 'use_container_width=True' makes it fit the sidebar perfectly
     st.sidebar.image("logo.png", use_container_width=True)
     
     st.title("⚖️ Verdix")
