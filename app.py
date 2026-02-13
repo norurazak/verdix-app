@@ -29,7 +29,7 @@ def get_database():
 # --- MAIN APP ---
 def main():
     st.set_page_config(page_title="Verdix", page_icon="⚖️", layout="centered")
-    st.sidebar.image("logo.png", use_container_width=True)
+    st.sidebar.image("Verdix.png", use_container_width=True)
     
     st.title("⚖️ Verdix")
     st.caption("Startup Pitching & Judging System")
