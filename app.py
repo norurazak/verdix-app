@@ -178,10 +178,15 @@ def main():
             
             if not df_scores.empty:
                 # Calculate Total Raw Score (Sum of cols D-J)
-                # Note: We rely on the column names being exact matches to headers
                 numeric_cols = ['Problem Sol-Fit', 'Competitor Market', 'GTM Strategy', 
                                 'Innovation', 'Prototype', 'Revenue Model', 'Story Telling']
                 
+                # --- FIX: FORCE CONVERT TEXT TO NUMBERS ---
+                for col in numeric_cols:
+                    # Coerce errors will turn non-numbers into 0
+                    df_scores[col] = pd.to_numeric(df_scores[col], errors='coerce').fillna(0)
+                # ------------------------------------------
+
                 # Create a Total column
                 df_scores['Total Raw'] = df_scores[numeric_cols].sum(axis=1)
                 
@@ -191,8 +196,6 @@ def main():
                 
                 st.dataframe(leaderboard)
                 st.bar_chart(leaderboard.set_index('Team Name'))
-            else:
-                st.info("No scores yet.")
 
 if __name__ == "__main__":
     main()
