@@ -9,6 +9,7 @@ SCOPE = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/au
 SHEET_NAME = "Verdix_DB"
 
 # --- AUTHENTICATION ---
+@st.cache_resource
 def get_database():
     # Load credentials from Streamlit Secrets
     if "gcp_service_account" not in st.secrets:
