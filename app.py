@@ -258,7 +258,7 @@ def main():
                         st.success(f"✅ {team_name}'s profile has been securely updated in the Verdix system.")
                     else:
                         st.success(f"✅ {team_name} successfully registered.")
-                        st.info("Your investor profile has been securely logged. The judging panel will review your materials shortly.")
+                        st.info("Your team information has been securely logged. The judging panel will review your materials shortly.")
 
     # ---------------------------
     # MODE 2: JUDGE PORTAL
