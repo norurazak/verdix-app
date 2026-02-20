@@ -28,11 +28,27 @@ def get_database():
 
 # --- MAIN APP ---
 def main():
-    st.set_page_config(page_title="Verdix", page_icon="⚖️", layout="centered")
+    # Removed the scale icon from the browser tab
+    st.set_page_config(page_title="Verdix", layout="centered")
+    
+    # --- UX HIDE STREAMLIT BRANDING ---
+    hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+    st.markdown(hide_st_style, unsafe_allow_html=True)
+    # ----------------------------------
+
     st.sidebar.image("Verdix.png", use_container_width=True)
     
-    st.title("⚖️ Verdix")
-    st.caption("Startup Pitching & Judging System")
+    # --- NEW TITLE & VC-STYLE DESCRIPTION ---
+    st.title("Verdix")
+    st.subheader("The Startup Pitching & Judging System")
+    st.write("Verdix is a streamlined, high-performance scoring platform designed to bring professional, VC-style evaluation to fast-paced pitch competitions, accelerators, and student venture showcases.")
+    st.divider() # Adds a clean visual line under the description
 
     # Connect to Google Sheet
     try:
