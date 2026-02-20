@@ -67,11 +67,11 @@ def main():
     # MODE 1: STUDENT REGISTRATION
     # ---------------------------
     if menu == "Student Registration":
-        st.header("🚀 Startup Registration")
-        st.write("Build a compelling, investor-ready profile to unlock access to the pitching platform. Share your vision, traction, team, and growth strategy in a format designed to match VC expectations—so you can confidently showcase your startup, stand out from the crowd, and connect with the right investors.")
         
-        # --- NEW INSTRUCTION ---
-        st.info("🔄 **Need to update your info?** Simply fill out this form again and select 'Update Existing Registration' below. We will keep your most recent submission.")
+        # --- HERO SECTION (Centered Typography) ---
+        st.markdown("<h1 style='text-align: center;'>🚀 Startup Registration</h1>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #555555; font-size: 1.1rem;'>Build a compelling, investor-ready profile to unlock access to the pitching platform. Share your vision, traction, team, and growth strategy in a format designed to match VC expectations.</p>", unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True) # Adds a clean visual space
         
         from datetime import datetime
         deadline = datetime(2026, 3, 15, 23, 59) 
@@ -86,7 +86,7 @@ def main():
             config_data = ws_config.get_all_records()
             tracks = [row["Track Name"] for row in config_data if row.get("Track Name")]
             
-            # --- DICTIONARIES FOR INTERACTIVE DESCRIPTIONS ---
+            # --- DICTIONARIES (Hidden here to keep code clean) ---
             industry_dict = {
                 "Agentic AI": "Autonomous agents and multi-step AI orchestration systems.",
                 "GenAI & LLMs": "Creative tools, text generation, and model infrastructure.",
@@ -127,52 +127,75 @@ def main():
                 "4. Scaling & Revenue (Growth Stage)": "**VC Focus:** Revenue growth, Customer Acquisition Cost (CAC), and Lifetime Value (LTV).\n\n**Description:** The product is being sold. The startup has a repeatable process for acquiring customers. (Deliverable: Financial statements and growth charts)."
             }
             
-            # --- SUBMISSION TYPE ---
-            st.subheader("Submission Type")
-            submission_type = st.radio("Is this a new registration or an update?", ["🆕 New Registration", "🔄 Update Existing Registration"])
+            # --- HORIZONTAL RADIO BUTTON ---
+            submission_type = st.radio(
+                "Submission Type", 
+                ["🆕 New Registration", "🔄 Update Existing Registration"], 
+                horizontal=True,
+                help="If you are updating, make sure to use your exact Team Name so we can replace your old entry."
+            )
 
-            st.subheader("1. Team Details")
-            team_name = st.text_input("Startup / Team Name *")
-            track = st.selectbox("Which Track are you competing in? *", tracks)
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                team_leaders = st.text_area("Team Leaders (Names) *", placeholder="E.g., Alice (CEO), Bob (CTO)")
-                student_id = st.text_input("Student ID / IC No *", placeholder="E.g., 12345678 or 010203-14-5555")
-            with col2:
-                university = st.text_input("University / Institution *", placeholder="E.g., Sunway University")
-                programme = st.text_input("Academic Programme *", placeholder="E.g., BSc Computer Science")
-                faculty = st.text_input("Faculty / School *", placeholder="E.g., School of Science and Technology")
+            # --- CARD 1: TEAM DETAILS ---
+            with st.container(border=True):
+                st.markdown("### 👥 1. Team & Academic Details")
+                st.markdown("<br>", unsafe_allow_html=True)
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    team_name = st.text_input("Startup / Team Name *")
+                    team_leaders = st.text_area("Team Leaders (Names) *", placeholder="E.g., Alice (CEO), Bob (CTO)")
+                    student_id = st.text_input("Student ID / IC No *", placeholder="E.g., 12345678 or 010203-14-5555")
+                with col2:
+                    track = st.selectbox("Which Track are you competing in? *", tracks)
+                    university = st.text_input("University *", placeholder="E.g., Sunway University")
+                    programme = st.text_input("Academic Programme *", placeholder="E.g., BSc Computer Science")
+                    faculty = st.text_input("Faculty / School *", placeholder="E.g., School of Science and Technology")
 
-            st.subheader("2. Venture Profile")
+            # --- CARD 2: VENTURE PROFILE ---
+            with st.container(border=True):
+                st.markdown("### 💡 2. Venture Profile")
+                st.markdown("<br>", unsafe_allow_html=True)
+                
+                selected_industries = st.multiselect("Industry / Tags (Select up to 3) *", list(industry_dict.keys()))
+                if selected_industries:
+                    for ind in selected_industries:
+                        st.caption(f"🔹 **{ind}**: {industry_dict[ind]}")
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+                
+                stage = st.selectbox("Stage of Startup *", [""] + list(stage_dict.keys()))
+                if stage:
+                    st.info(stage_dict[stage])
+                
+                value_prop = st.text_area(
+                    "Value Proposition (The 'Elevator Pitch') *", 
+                    placeholder="What problem are you solving, and how?",
+                    height=150
+                )
             
-            selected_industries = st.multiselect("Industry / Tags (Select up to 3) *", list(industry_dict.keys()))
-            if selected_industries:
-                for ind in selected_industries:
-                    st.caption(f"🔹 **{ind}**: {industry_dict[ind]}")
+            # --- CARD 3: MEDIA & LINKS ---
+            with st.container(border=True):
+                st.markdown("### 📎 3. Media & Links")
+                st.info("💡 **Security Check:** Please ensure all Google Drive or Canva links are set to 'Anyone with the link can view' before submitting.")
+                
+                video_link = st.text_input("Pitch Video Link (Optional)", placeholder="YouTube or Vimeo URL")
+                deck_link = st.text_input("Pitch Deck / Logo Link *", placeholder="Google Drive, Canva, or Dropbox URL")
             
-            stage = st.selectbox("Stage of Startup *", [""] + list(stage_dict.keys()))
-            if stage:
-                st.info(stage_dict[stage])
+            st.markdown("<br>", unsafe_allow_html=True)
             
-            value_prop = st.text_area("Value Proposition (The 'Elevator Pitch') *", placeholder="What problem are you solving, and how?")
-            
-            st.subheader("3. Media & Links")
-            st.info("💡 Note: Please ensure all Google Drive/Canva links are set to 'Anyone with the link can view'.")
-            video_link = st.text_input("Pitch Video Link (Optional)", placeholder="YouTube or Vimeo URL")
-            deck_link = st.text_input("Pitch Deck / Logo Link *", placeholder="Google Drive, Canva, or Dropbox URL")
-            
-            submitted = st.button("Submit Registration", type="primary")
+            # --- SUBMISSION ACTION ---
+            # Center the submit button using columns
+            _, center_col, _ = st.columns([1, 2, 1])
+            with center_col:
+                submitted = st.button("🚀 Submit Registration", type="primary", use_container_width=True)
             
             if submitted:
-                # Validation check now includes university
                 if not team_name or not team_leaders or not student_id or not university or not stage or not value_prop or not deck_link:
                     st.error("⚠️ Please fill in all required fields (marked with *).")
                 else:
                     industry_string = ", ".join(selected_industries)
                     timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                     
-                    # APPEND 14 COLUMNS TO GOOGLE SHEETS
                     ws_teams.append_row([
                         timestamp,         # Col A
                         submission_type,   # Col B
@@ -190,7 +213,6 @@ def main():
                         deck_link          # Col N
                     ])
                     
-                    # Custom success message depending on if it's new or an update
                     if "Update" in submission_type:
                         st.success(f"🔄 {team_name}'s profile has been successfully updated in our system!")
                     else:
