@@ -288,19 +288,19 @@ def main():
                         st.info("Your investor profile has been securely logged. The judging panel will review your materials shortly.")
 
     # ---------------------------
-    # MODE 2: JUDGE'S CONSOLE
+    # MODE 2: JUDGE PORTAL
     # ---------------------------
-    elif menu == "Judge's Console":
+    elif menu == "Judge Portal":
         
         # --- HERO SECTION ---
-        st.markdown("<h1 style='text-align: center;'>⚖️ Judge's Console</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center;'>⚖️ Judge Portal</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #555555; font-size: 1.1rem;'>Review startup profiles and submit your official evaluations.</p>", unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
         
         with st.container(border=True):
             judge_name = st.text_input("👨‍⚖️ Enter Your Name (Judge) *", placeholder="e.g., John Doe")
         
-        # Fetch Tracks (Make sure your Config tab has exactly "Track Name" in row 1!)
+        # Fetch Tracks using the new "Track Name" header
         config_data = ws_config.get_all_records()
         tracks = [str(row["Track Name"]) for row in config_data if row.get("Track Name")]
         
@@ -315,11 +315,10 @@ def main():
                 import pandas as pd
                 df_teams = pd.DataFrame(teams_data)
                 
-                # Check if the database has caught the new 14-column format yet
+                # Filter teams by the track the judge selected
                 if 'Track' not in df_teams.columns:
                     st.info("Waiting for the first team to register to build the database format.")
                 else:
-                    # Filter teams by the track the judge selected
                     track_teams = df_teams[df_teams['Track'] == selected_track]
                     
                     if track_teams.empty:
