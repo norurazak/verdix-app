@@ -287,7 +287,7 @@ def main():
                         st.success(f"✅ {team_name} successfully registered.")
                         st.info("Your investor profile has been securely logged. The judging panel will review your materials shortly.")
 
-    # ---------------------------
+   # ---------------------------
     # MODE 2: JUDGE PORTAL
     # ---------------------------
     elif menu == "Judge Portal":
@@ -297,86 +297,116 @@ def main():
         st.markdown("<p style='text-align: center; color: #555555; font-size: 1.1rem;'>Review startup profiles and submit your official evaluations.</p>", unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
         
-        with st.container(border=True):
-            judge_name = st.text_input("👨‍⚖️ Enter Your Name (Judge) *", placeholder="e.g., John Doe")
-        
-        # Fetch Tracks using the new "Track Name" header
-        config_data = ws_config.get_all_records()
-        tracks = [str(row["Track Name"]) for row in config_data if row.get("Track Name")]
-        
-        with st.container(border=True):
-            selected_track = st.selectbox("📌 Select Track", tracks)
-            
-            # Fetch Teams Database
-            teams_data = ws_teams.get_all_records()
-            if not teams_data:
-                st.warning("⚠️ No teams have registered yet.")
-            else:
-                import pandas as pd
-                df_teams = pd.DataFrame(teams_data)
+        # --- SESSION STATE (Memory) ---
+        if "judge_logged_in" not in st.session_state:
+            st.session_state.judge_logged_in = False
+        if "current_judge_name" not in st.session_state:
+            st.session_state.current_judge_name = ""
+
+        # --- LOGIN SCREEN ---
+        if not st.session_state.judge_logged_in:
+            with st.container(border=True):
+                st.markdown("### 🔐 Secure Login")
+                judge_name_input = st.text_input("👨‍⚖️ Enter Your Full Name")
+                judge_pass_input = st.text_input("🔑 Event Access Code", type="password")
                 
-                # Filter teams by the track the judge selected
-                if 'Track' not in df_teams.columns:
-                    st.info("Waiting for the first team to register to build the database format.")
-                else:
-                    track_teams = df_teams[df_teams['Track'] == selected_track]
-                    
-                    if track_teams.empty:
-                        st.info(f"No teams found in the {selected_track} track yet.")
+                if st.button("Log In", type="primary"):
+                    if not judge_name_input:
+                        st.error("⚠️ Please enter your name so we can record your scores.")
+                    elif judge_pass_input == "verdix2026":  # <--- CHANGE YOUR PASSWORD HERE
+                        st.session_state.judge_logged_in = True
+                        st.session_state.current_judge_name = judge_name_input
+                        st.rerun() # Refreshes the page to unlock the portal
                     else:
-                        team_list = track_teams['Team Name'].tolist()
-                        selected_team = st.selectbox("🚀 Select Startup to Evaluate", team_list)
+                        st.error("❌ Incorrect Access Code.")
+        
+        # --- THE SECURE PORTAL (Only visible if logged in) ---
+        else:
+            # Display who is logged in and provide a log out button
+            col_name, col_logout = st.columns([3, 1])
+            with col_name:
+                st.success(f"✅ Logged in securely as: **{st.session_state.current_judge_name}**")
+            with col_logout:
+                if st.button("Log Out"):
+                    st.session_state.judge_logged_in = False
+                    st.session_state.current_judge_name = ""
+                    st.rerun()
+            
+            st.divider()
+
+            # Fetch Tracks using the new "Track Name" header
+            config_data = ws_config.get_all_records()
+            tracks = [str(row["Track Name"]) for row in config_data if row.get("Track Name")]
+            
+            with st.container(border=True):
+                selected_track = st.selectbox("📌 Select Track", tracks)
+                
+                # Fetch Teams Database
+                teams_data = ws_teams.get_all_records()
+                if not teams_data:
+                    st.warning("⚠️ No teams have registered yet.")
+                else:
+                    import pandas as pd
+                    df_teams = pd.DataFrame(teams_data)
+                    
+                    if 'Track' not in df_teams.columns:
+                        st.info("Waiting for the first team to register to build the database format.")
+                    else:
+                        track_teams = df_teams[df_teams['Track'] == selected_track]
                         
-                        # --- PULL THE VC PROFILE ---
-                        team_info = track_teams[track_teams['Team Name'] == selected_team].iloc[-1] 
-                        
-                        with st.expander(f"📄 View {selected_team}'s Investor Profile", expanded=True):
-                            st.markdown(f"**Value Proposition:** {team_info.get('Value Proposition', 'N/A')}")
-                            st.markdown(f"**Industry / Tags:** {team_info.get('Industry / Tags', 'N/A')}")
-                            st.markdown(f"**Current Stage:** {team_info.get('Stage of Startup', 'N/A')}")
-                            st.markdown("---")
-                            st.markdown(f"**Founders:** {team_info.get('Team Leaders (Names)', 'N/A')}")
-                            st.markdown(f"**Academic Background:** {team_info.get('University / Institution', 'N/A')} - {team_info.get('Faculty / School', 'N/A')}")
+                        if track_teams.empty:
+                            st.info(f"No teams found in the {selected_track} track yet.")
+                        else:
+                            team_list = track_teams['Team Name'].tolist()
+                            selected_team = st.selectbox("🚀 Select Startup to Evaluate", team_list)
                             
-                            st.markdown("<br>", unsafe_allow_html=True)
-                            col_link1, col_link2 = st.columns(2)
-                            deck_link = team_info.get('Pitch Deck / Logo Link', '')
-                            video_link = team_info.get('Pitch Video Link', '')
+                            # --- PULL THE VC PROFILE ---
+                            team_info = track_teams[track_teams['Team Name'] == selected_team].iloc[-1] 
                             
-                            with col_link1:
-                                if deck_link: st.markdown(f"[🔗 Open Pitch Deck]({deck_link})")
-                            with col_link2:
-                                if video_link: st.markdown(f"[🎥 Open Pitch Video]({video_link})")
-                        
-                        # --- SCORING FORM ---
-                        st.markdown("<h3 style='margin-top: 20px;'>📊 Evaluation Criteria</h3>", unsafe_allow_html=True)
-                        
-                        from datetime import datetime
-                        with st.form("scoring_form"):
-                            st.info("Score each category from 1 (Poor) to 10 (Excellent).")
+                            with st.expander(f"📄 View {selected_team}'s Investor Profile", expanded=True):
+                                st.markdown(f"**Value Proposition:** {team_info.get('Value Proposition', 'N/A')}")
+                                st.markdown(f"**Industry / Tags:** {team_info.get('Industry / Tags', 'N/A')}")
+                                st.markdown(f"**Current Stage:** {team_info.get('Stage of Startup', 'N/A')}")
+                                st.markdown("---")
+                                st.markdown(f"**Founders:** {team_info.get('Team Leaders (Names)', 'N/A')}")
+                                st.markdown(f"**Academic Background:** {team_info.get('University / Institution', 'N/A')} - {team_info.get('Faculty / School', 'N/A')}")
+                                
+                                st.markdown("<br>", unsafe_allow_html=True)
+                                col_link1, col_link2 = st.columns(2)
+                                deck_link = team_info.get('Pitch Deck / Logo Link', '')
+                                video_link = team_info.get('Pitch Video Link', '')
+                                
+                                with col_link1:
+                                    if deck_link: st.markdown(f"[🔗 Open Pitch Deck]({deck_link})")
+                                with col_link2:
+                                    if video_link: st.markdown(f"[🎥 Open Pitch Video]({video_link})")
                             
-                            score_1 = st.slider("1. Problem-Solution Fit", 1, 10, 5)
-                            score_2 = st.slider("2. Competitor & Market Analysis", 1, 10, 5)
-                            score_3 = st.slider("3. Go-to-Market (GTM) Strategy", 1, 10, 5)
-                            score_4 = st.slider("4. Innovation / Differentiation", 1, 10, 5)
-                            score_5 = st.slider("5. Prototype / MVP Readiness", 1, 10, 5)
-                            score_6 = st.slider("6. Revenue Model / Financials", 1, 10, 5)
-                            score_7 = st.slider("7. Storytelling & Pitch Delivery", 1, 10, 5)
+                            # --- SCORING FORM ---
+                            st.markdown("<h3 style='margin-top: 20px;'>📊 Evaluation Criteria</h3>", unsafe_allow_html=True)
                             
-                            comments = st.text_area("Feedback / Comments (Optional)", placeholder="What did they do well? What needs improvement?")
-                            
-                            submit_score = st.form_submit_button("Submit Final Score", type="primary", use_container_width=True)
-                            
-                            if submit_score:
-                                if not judge_name:
-                                    st.error("⚠️ Please enter your name at the top of the page before submitting.")
-                                else:
+                            from datetime import datetime
+                            with st.form("scoring_form"):
+                                st.info("Score each category from 1 (Poor) to 10 (Excellent).")
+                                
+                                score_1 = st.slider("1. Problem-Solution Fit", 1, 10, 5)
+                                score_2 = st.slider("2. Competitor & Market Analysis", 1, 10, 5)
+                                score_3 = st.slider("3. Go-to-Market (GTM) Strategy", 1, 10, 5)
+                                score_4 = st.slider("4. Innovation / Differentiation", 1, 10, 5)
+                                score_5 = st.slider("5. Prototype / MVP Readiness", 1, 10, 5)
+                                score_6 = st.slider("6. Revenue Model / Financials", 1, 10, 5)
+                                score_7 = st.slider("7. Storytelling & Pitch Delivery", 1, 10, 5)
+                                
+                                comments = st.text_area("Feedback / Comments (Optional)", placeholder="What did they do well? What needs improvement?")
+                                
+                                submit_score = st.form_submit_button("Submit Final Score", type="primary", use_container_width=True)
+                                
+                                if submit_score:
                                     timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                                     
-                                    # Append to Scores Worksheet
+                                    # Append to Scores Worksheet using the Session State Name
                                     ws_scores.append_row([
                                         timestamp,         # Col A
-                                        judge_name,        # Col B
+                                        st.session_state.current_judge_name, # Col B (Pulls from memory!)
                                         selected_team,     # Col C
                                         score_1,           # Col D
                                         score_2,           # Col E
