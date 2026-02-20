@@ -63,7 +63,7 @@ def main():
     # Sidebar Navigation
     menu = st.sidebar.radio("Navigation", ["Student Registration", "Judge Portal", "Leaderboard"])
 
-   # ---------------------------
+  # ---------------------------
     # MODE 1: STUDENT REGISTRATION
     # ---------------------------
     if menu == "Student Registration":
@@ -71,7 +71,7 @@ def main():
         # --- HERO SECTION (Centered Typography) ---
         st.markdown("<h1 style='text-align: center;'>🚀 Startup Registration</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #555555; font-size: 1.1rem;'>Build a compelling, investor-ready profile to unlock access to the pitching platform. Share your vision, traction, team, and growth strategy in a format designed to match VC expectations.</p>", unsafe_allow_html=True)
-        st.markdown("<br>", unsafe_allow_html=True) # Adds a clean visual space
+        st.markdown("<br>", unsafe_allow_html=True)
         
         from datetime import datetime
         deadline = datetime(2026, 3, 15, 23, 59) 
@@ -86,7 +86,7 @@ def main():
             config_data = ws_config.get_all_records()
             tracks = [row["Track Name"] for row in config_data if row.get("Track Name")]
             
-            # --- DICTIONARIES (Hidden here to keep code clean) ---
+            # --- DICTIONARIES ---
             industry_dict = {
                 "Agentic AI": "Autonomous agents and multi-step AI orchestration systems.",
                 "GenAI & LLMs": "Creative tools, text generation, and model infrastructure.",
@@ -137,8 +137,8 @@ def main():
 
             # --- CARD 1: TEAM DETAILS ---
             with st.container(border=True):
-                st.markdown("### 👥 1. Team & Academic Details")
-                st.markdown("<br>", unsafe_allow_html=True)
+                # THE NEW COLORED BANNER
+                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Team & Academic Details</div>", unsafe_allow_html=True)
                 
                 col1, col2 = st.columns(2)
                 with col1:
@@ -153,8 +153,8 @@ def main():
 
             # --- CARD 2: VENTURE PROFILE ---
             with st.container(border=True):
-                st.markdown("### 💡 2. Venture Profile")
-                st.markdown("<br>", unsafe_allow_html=True)
+                # THE NEW COLORED BANNER
+                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Venture Profile</div>", unsafe_allow_html=True)
                 
                 selected_industries = st.multiselect("Industry / Tags (Select up to 3) *", list(industry_dict.keys()))
                 if selected_industries:
@@ -175,7 +175,9 @@ def main():
             
             # --- CARD 3: MEDIA & LINKS ---
             with st.container(border=True):
-                st.markdown("### 📎 3. Media & Links")
+                # THE NEW COLORED BANNER
+                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Media & Links</div>", unsafe_allow_html=True)
+                
                 st.info("💡 **Security Check:** Please ensure all Google Drive or Canva links are set to 'Anyone with the link can view' before submitting.")
                 
                 video_link = st.text_input("Pitch Video Link (Optional)", placeholder="YouTube or Vimeo URL")
@@ -184,7 +186,6 @@ def main():
             st.markdown("<br>", unsafe_allow_html=True)
             
             # --- SUBMISSION ACTION ---
-            # Center the submit button using columns
             _, center_col, _ = st.columns([1, 2, 1])
             with center_col:
                 submitted = st.button("🚀 Submit Registration", type="primary", use_container_width=True)
