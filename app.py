@@ -46,8 +46,8 @@ def main():
     
     # --- NEW TITLE & VC-STYLE DESCRIPTION ---
     st.title("Verdix")
-    st.subheader("The Startup Pitching & Judging System")
-    st.write("Verdix is a streamlined, high-performance scoring platform designed to bring professional, VC-style evaluation to fast-paced pitch competitions, accelerators, and student venture showcases.")
+    st.subheader("The Startup Scoring System")
+    st.write("Verdix is a streamlined scoring platform designed to bring professional, VC-style evaluation to fast-paced pitch competitions, accelerators, and student venture showcases.")
     st.divider() # Adds a clean visual line under the description
 
     # Connect to Google Sheet
