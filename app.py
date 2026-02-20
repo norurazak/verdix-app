@@ -85,7 +85,7 @@ def main():
             days = time_left.days
             hours = time_left.seconds // 3600
             minutes = (time_left.seconds % 3600) // 60
-            seconds = time_left.seconds % 60  # <-- Calculates the seconds
+            seconds = time_left.seconds % 60
             
             clock_html = f"""
             <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px;">
@@ -111,6 +111,10 @@ def main():
             </div>
             """
             st.markdown(clock_html, unsafe_allow_html=True)
+            
+            # Fetch tracks from Config (Make sure your Config tab has exactly "Track Name" in row 1!)
+            config_data = ws_config.get_all_records()
+            tracks = [row["Track Name"] for row in config_data if row.get("Track Name")]
 
             # --- DICTIONARIES ---
             industry_dict = {
@@ -260,7 +264,7 @@ def main():
                         st.success(f"✅ {team_name}'s profile has been securely updated in the Verdix system.")
                     else:
                         st.success(f"✅ {team_name} successfully registered.")
-                        st.info("Your team information has been securely logged. The judging panel will review your materials shortly.")
+                        st.info("Your investor profile has been securely logged. The judging panel will review your materials shortly.")
 
     # ---------------------------
     # MODE 2: JUDGE PORTAL
