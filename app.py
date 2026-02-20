@@ -212,10 +212,27 @@ def main():
                 submitted = st.button("🚀 Submit Registration", type="primary", use_container_width=True)
             
             if submitted:
-                # Validation check includes Track and all Academic details
-                if not team_name or not track or not team_leaders or not student_id or not university or not faculty or not programme or not stage or not value_prop or not deck_link:
-                    st.error("⚠️ Please fill in all required fields (marked with *).")
+                # --- SMART VALIDATION ---
+                missing_fields = []
+                
+                if not team_name: missing_fields.append("Startup / Team Name")
+                if not track: missing_fields.append("Track")
+                if not team_leaders: missing_fields.append("Team Leaders")
+                if not student_id: missing_fields.append("Student ID / IC No")
+                if not university: missing_fields.append("University / Institution")
+                if not faculty: missing_fields.append("Faculty / School")
+                if not programme: missing_fields.append("Academic Programme")
+                if not selected_industries: missing_fields.append("Industry / Tags")
+                if not stage: missing_fields.append("Stage of Startup")
+                if not value_prop: missing_fields.append("Value Proposition")
+                if not deck_link: missing_fields.append("Pitch Deck / Logo Link")
+                
+                # If the list has anything in it, show the specific error
+                if missing_fields:
+                    missing_str = ", ".join(missing_fields)
+                    st.error(f"⚠️ Please fill in the missing fields: **{missing_str}**")
                 else:
+                    # If everything is filled out, save to database
                     industry_string = ", ".join(selected_industries)
                     timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                     
