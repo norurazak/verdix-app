@@ -67,30 +67,92 @@ def main():
     # MODE 1: STUDENT REGISTRATION
     # ---------------------------
     if menu == "Student Registration":
-        st.header("📝 Team Registration")
+        st.header("🚀 Startup Registration")
+        st.write("Complete your VC-style profile to enter the pitching platform.")
         
-        # Fetch Tracks from Config
-        try:
+        # --- REGISTRATION DEADLINE LOGIC ---
+        from datetime import datetime
+        # Set your deadline here (Year, Month, Day, Hour, Minute)
+        deadline = datetime(2026, 3, 15, 23, 59) 
+        now = datetime.now()
+        
+        if now > deadline:
+            st.error("🚨 Registration is officially closed.")
+        else:
+            # Calculate remaining time
+            time_left = deadline - now
+            st.warning(f"⏳ Registration closes in {time_left.days} days, {time_left.seconds // 3600} hours!")
+            
+            # Fetch tracks from Config
             config_data = ws_config.get_all_records()
-            df_config = pd.DataFrame(config_data)
-            track_options = df_config['Track List'].tolist() if not df_config.empty else ["Track A", "Track B"]
-        except:
-            track_options = ["Track A", "Track B"]
+            tracks = [row["Track Name"] for row in config_data if row.get("Track Name")]
+            
+            with st.form("registration_form"):
+                st.subheader("1. Team Details")
+                team_name = st.text_input("Startup / Team Name *")
+                track = st.selectbox("Which Track are you competing in? *", tracks)
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    team_leaders = st.text_area("Team Leaders (Names) *", placeholder="E.g., Alice (CEO), Bob (CTO)")
+                with col2:
+                    programme = st.text_input("Academic Programme *", placeholder="E.g., BSc Computer Science")
+                    faculty = st.text_input("Faculty / School *", placeholder="E.g., School of Science and Technology")
 
-        with st.form("reg_form"):
-            team_name = st.text_input("Team Name")
-            track = st.selectbox("Select Track", track_options)
-            value_prop = st.text_area("Value Proposition")
-            logo_link = st.text_input("Link to Logo/Slides")
-            
-            submitted = st.form_submit_button("Register Team")
-            
-            if submitted:
-                if team_name and value_prop:
-                    ws_teams.append_row([team_name, track, value_prop, logo_link, str(datetime.now())])
-                    st.success(f"✅ {team_name} successfully registered!")
-                else:
-                    st.warning("⚠️ Please fill in Team Name and Value Proposition.")
+                st.subheader("2. Venture Profile")
+                
+                # Comprehensive Industry List
+                industries = [
+                    "Agentic AI", "GenAI & LLMs", "SaaS (Enterprise)", "Cybersecurity", "Deep Tech", "Web3 & Blockchain", "CloudTech & DevOps",
+                    "HealthTech", "BioTech", "MedTech", "FemTech", "Longevity & Aging", "Wellness & Mental Health",
+                    "ClimateTech", "CleanTech", "AgTech", "FoodTech", "Mobility & EV", "Logistics & Supply Chain", "SpaceTech", "PropTech & Construction",
+                    "FinTech", "InsurTech", "EdTech", "GovTech", "DefenseTech", "Retail & E-commerce", "Creator Economy", "Gaming & Metaverse", "AdTech"
+                ]
+                selected_industries = st.multiselect("Industry / Tags (Select up to 3) *", industries)
+                
+                # Stage of Startup
+                stages = [
+                    "1. Concept & Ideation (Pre-Product)",
+                    "2. Prototype / Alpha (Proof of Concept)",
+                    "3. MVP & Pilot (Early Traction)",
+                    "4. Scaling & Revenue (Growth Stage)"
+                ]
+                stage = st.selectbox("Stage of Startup *", stages, help="Select the stage that best describes your current progress.")
+                
+                value_prop = st.text_area("Value Proposition (The 'Elevator Pitch') *", placeholder="What problem are you solving, and how?")
+                
+                st.subheader("3. Media & Links")
+                st.info("💡 Note: Please ensure all Google Drive/Canva links are set to 'Anyone with the link can view'.")
+                video_link = st.text_input("Pitch Video Link (Optional)", placeholder="YouTube or Vimeo URL")
+                deck_link = st.text_input("Pitch Deck / Logo Link *", placeholder="Google Drive, Canva, or Dropbox URL")
+                
+                submitted = st.form_submit_button("Submit Registration", type="primary")
+                
+                if submitted:
+                    # Basic Validation
+                    if not team_name or not team_leaders or not value_prop or not deck_link:
+                        st.error("⚠️ Please fill in all required fields (marked with *).")
+                    else:
+                        # Convert list of industries to a comma-separated string
+                        industry_string = ", ".join(selected_industries)
+                        timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                        
+                        # APPEND TO GOOGLE SHEETS (Exactly 11 columns matching your sheet)
+                        ws_teams.append_row([
+                            timestamp,         # Col A
+                            team_name,         # Col B
+                            track,             # Col C
+                            team_leaders,      # Col D
+                            programme,         # Col E
+                            faculty,           # Col F
+                            industry_string,   # Col G
+                            stage,             # Col H
+                            value_prop,        # Col I
+                            video_link,        # Col J
+                            deck_link          # Col K
+                        ])
+                        st.success(f"🎉 {team_name} successfully registered!")
+                        st.balloons()
 
     # ---------------------------
     # MODE 2: JUDGE PORTAL
