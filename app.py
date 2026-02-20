@@ -96,10 +96,10 @@ def main():
                 
                 col1, col2 = st.columns(2)
                 with col1:
-                    team_leaders = st.text_area("Team Leaders (Names) *", placeholder="E.g., Alice (CEO), Bob (CTO)")
+                    team_leaders = st.text_area("Team Leaders (Names) *", placeholder="E.g., Alice Tan (CEO)")
                 with col2:
                     programme = st.text_input("Academic Programme *", placeholder="E.g., BSc Computer Science")
-                    faculty = st.text_input("Faculty / School *", placeholder="E.g., School of Science and Technology")
+                    faculty = st.text_input("Faculty / School *", placeholder="E.g., Faculty of Engineering and Technology")
 
                 st.subheader("2. Venture Profile")
                 
