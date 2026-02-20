@@ -68,7 +68,7 @@ def main():
     # ---------------------------
     if menu == "Student Registration":
         
-        # --- HERO SECTION (Centered Typography) ---
+        # --- HERO SECTION ---
         st.markdown("<h1 style='text-align: center;'>🚀 Startup Registration</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #555555; font-size: 1.1rem;'>Build a compelling, investor-ready profile to unlock access to the pitching platform. Share your vision, traction, team, and growth strategy in a format designed to match VC expectations.</p>", unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
@@ -80,12 +80,36 @@ def main():
         if now > deadline:
             st.error("🚨 Registration is officially closed.")
         else:
+            # --- THE DIGITAL CLOCK ---
             time_left = deadline - now
-            st.warning(f"⏳ Registration closes in {time_left.days} days, {time_left.seconds // 3600} hours!")
+            days = time_left.days
+            hours = time_left.seconds // 3600
+            minutes = (time_left.seconds % 3600) // 60
             
+            clock_html = f"""
+            <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px;">
+                <div style="background-color: #262730; padding: 15px 25px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="font-size: 2.5rem; font-family: 'Courier New', monospace; font-weight: bold; color: #FEC30D; line-height: 1;">{days:02d}</div>
+                    <div style="font-size: 0.75rem; color: #E0E0E0; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;">Days</div>
+                </div>
+                <div style="font-size: 2.5rem; font-weight: bold; color: #262730; display: flex; align-items: center; padding-bottom: 15px;">:</div>
+                <div style="background-color: #262730; padding: 15px 25px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="font-size: 2.5rem; font-family: 'Courier New', monospace; font-weight: bold; color: #FEC30D; line-height: 1;">{hours:02d}</div>
+                    <div style="font-size: 0.75rem; color: #E0E0E0; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;">Hours</div>
+                </div>
+                <div style="font-size: 2.5rem; font-weight: bold; color: #262730; display: flex; align-items: center; padding-bottom: 15px;">:</div>
+                <div style="background-color: #262730; padding: 15px 25px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="font-size: 2.5rem; font-family: 'Courier New', monospace; font-weight: bold; color: #FEC30D; line-height: 1;">{minutes:02d}</div>
+                    <div style="font-size: 0.75rem; color: #E0E0E0; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;">Mins</div>
+                </div>
+            </div>
+            """
+            st.markdown(clock_html, unsafe_allow_html=True)
+            
+            # Continue with existing data fetching
             config_data = ws_config.get_all_records()
             tracks = [row["Track Name"] for row in config_data if row.get("Track Name")]
-            
+
             # --- DICTIONARIES ---
             industry_dict = {
                 "Agentic AI": "Autonomous agents and multi-step AI orchestration systems.",
@@ -137,7 +161,6 @@ def main():
 
             # --- CARD 1: TEAM DETAILS ---
             with st.container(border=True):
-                # THE NEW COLORED BANNER
                 st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Team & Academic Details</div>", unsafe_allow_html=True)
                 
                 col1, col2 = st.columns(2)
@@ -153,7 +176,6 @@ def main():
 
             # --- CARD 2: VENTURE PROFILE ---
             with st.container(border=True):
-                # THE NEW COLORED BANNER
                 st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Venture Profile</div>", unsafe_allow_html=True)
                 
                 selected_industries = st.multiselect("Industry / Tags (Select up to 3) *", list(industry_dict.keys()))
@@ -175,7 +197,6 @@ def main():
             
             # --- CARD 3: MEDIA & LINKS ---
             with st.container(border=True):
-                # THE NEW COLORED BANNER
                 st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Media & Links</div>", unsafe_allow_html=True)
                 
                 st.info("💡 **Security Check:** Please ensure all Google Drive or Canva links are set to 'Anyone with the link can view' before submitting.")
