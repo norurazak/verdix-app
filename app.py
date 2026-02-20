@@ -80,37 +80,58 @@ def main():
         if now > deadline:
             st.error("🚨 Registration is officially closed.")
         else:
-            # --- THE DIGITAL CLOCK ---
-            time_left = deadline - now
-            days = time_left.days
-            hours = time_left.seconds // 3600
-            minutes = (time_left.seconds % 3600) // 60
-            seconds = time_left.seconds % 60
+            # --- THE LIVE TICKING DIGITAL CLOCK (JS INJECTION) ---
+            import streamlit.components.v1 as components
             
-            clock_html = f"""
-            <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px;">
-                <div style="background-color: #262730; padding: 15px 25px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <div style="font-size: 2.5rem; font-family: 'Courier New', monospace; font-weight: bold; color: #FEC30D; line-height: 1;">{days:02d}</div>
-                    <div style="font-size: 0.75rem; color: #E0E0E0; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;">Days</div>
+            # We use pure HTML/JS so it ticks in the browser without erasing Streamlit form data
+            live_clock_html = """
+            <!DOCTYPE html>
+            <html>
+            <head>
+            <style>
+                body { margin: 0; font-family: sans-serif; background-color: transparent; display: flex; justify-content: center; }
+                .container { display: flex; justify-content: center; gap: 15px; margin-top: 10px; margin-bottom: 20px;}
+                .block { background-color: #262730; padding: 15px 25px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                .num { font-size: 2.5rem; font-family: 'Courier New', monospace; font-weight: bold; color: #FEC30D; line-height: 1; }
+                .label { font-size: 0.75rem; color: #E0E0E0; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+                .colon { font-size: 2.5rem; font-weight: bold; color: #262730; display: flex; align-items: center; padding-bottom: 15px; }
+            </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="block"><div class="num" id="days">00</div><div class="label">Days</div></div>
+                    <div class="colon">:</div>
+                    <div class="block"><div class="num" id="hours">00</div><div class="label">Hours</div></div>
+                    <div class="colon">:</div>
+                    <div class="block"><div class="num" id="minutes">00</div><div class="label">Mins</div></div>
+                    <div class="colon">:</div>
+                    <div class="block"><div class="num" id="seconds">00</div><div class="label">Secs</div></div>
                 </div>
-                <div style="font-size: 2.5rem; font-weight: bold; color: #262730; display: flex; align-items: center; padding-bottom: 15px;">:</div>
-                <div style="background-color: #262730; padding: 15px 25px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <div style="font-size: 2.5rem; font-family: 'Courier New', monospace; font-weight: bold; color: #FEC30D; line-height: 1;">{hours:02d}</div>
-                    <div style="font-size: 0.75rem; color: #E0E0E0; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;">Hours</div>
-                </div>
-                <div style="font-size: 2.5rem; font-weight: bold; color: #262730; display: flex; align-items: center; padding-bottom: 15px;">:</div>
-                <div style="background-color: #262730; padding: 15px 25px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <div style="font-size: 2.5rem; font-family: 'Courier New', monospace; font-weight: bold; color: #FEC30D; line-height: 1;">{minutes:02d}</div>
-                    <div style="font-size: 0.75rem; color: #E0E0E0; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;">Mins</div>
-                </div>
-                <div style="font-size: 2.5rem; font-weight: bold; color: #262730; display: flex; align-items: center; padding-bottom: 15px;">:</div>
-                <div style="background-color: #262730; padding: 15px 25px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <div style="font-size: 2.5rem; font-family: 'Courier New', monospace; font-weight: bold; color: #FEC30D; line-height: 1;">{seconds:02d}</div>
-                    <div style="font-size: 0.75rem; color: #E0E0E0; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;">Secs</div>
-                </div>
-            </div>
+
+                <script>
+                    // Set your exact deadline here! (Month DD, YYYY HH:MM:SS)
+                    var deadline = new Date("Mar 15, 2026 23:59:00").getTime();
+                    
+                    var x = setInterval(function() {
+                        var now = new Date().getTime();
+                        var t = deadline - now;
+                        
+                        if (t >= 0) {
+                            document.getElementById("days").innerHTML = Math.floor(t / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+                            document.getElementById("hours").innerHTML = Math.floor((t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+                            document.getElementById("minutes").innerHTML = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+                            document.getElementById("seconds").innerHTML = Math.floor((t % (1000 * 60)) / 1000).toString().padStart(2, '0');
+                        } else {
+                            clearInterval(x);
+                            document.querySelector('.container').innerHTML = "<div style='color: red; font-size: 1.5rem; font-weight: bold;'>TIME IS UP!</div>";
+                        }
+                    }, 1000);
+                </script>
+            </body>
+            </html>
             """
-            st.markdown(clock_html, unsafe_allow_html=True)
+            components.html(live_clock_html, height=120)
+            # ----------------------------------------------------
             
             # Fetch tracks from Config (Make sure your Config tab has exactly "Track Name" in row 1!)
             config_data = ws_config.get_all_records()
