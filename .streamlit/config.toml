@@ -1,6 +1,6 @@
 [theme]
-primaryColor = "#D32F2F"      # Deep Red (From the 'X' in the logo for prominent buttons/actions)
-backgroundColor = "#FFFFFF"   # Clean White Background (Matches the logo's background aesthetic)
-secondaryBackgroundColor = "#2E3033" # Dark Charcoal Sidebar (From the logo's text/X, creates strong contrast)
-textColor = "#2E3033"         # Dark Charcoal Text (High readability on white, consistent with logo text)
+primaryColor = "#0072CE"      # Vibrant Blue (From the 'X' and 'Verdix' text for actions/buttons)
+backgroundColor = "#FFFFFF"   # Pure White Background (For a clean, modern, professional look)
+secondaryBackgroundColor = "#F0F4F8" # Light Blue-Grey Sidebar (Subtle contrast, keeps it light)
+textColor = "#003366"         # Deep Blue/Charcoal Text (High readability on white, matches logo)
 font = "sans serif"           # Modern, clean font
