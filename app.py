@@ -297,35 +297,39 @@ def main():
         st.markdown("<br>", unsafe_allow_html=True)
         
         with st.container(border=True):
-            judge_name = st.text_input("👨‍⚖️ Enter Your Name (Judge) *")
+            judge_name = st.text_input("👨‍⚖️ Enter Your Name (Judge) *", placeholder="e.g., John Doe")
         
-        if judge_name:
-            # FIX: We changed 'Track List' to 'Track Name' to match the database!
-            config_data = ws_config.get_all_records()
-            tracks = [str(row["Track Name"]) for row in config_data if row.get("Track Name")]
+        # --- REMOVED THE 'if judge_name:' BLOCKER ---
+        # Now everything below will load instantly!
+        
+        # Fetch Tracks
+        config_data = ws_config.get_all_records()
+        tracks = [str(row["Track Name"]) for row in config_data if row.get("Track Name")]
+        
+        with st.container(border=True):
+            selected_track = st.selectbox("📌 Select Track", tracks)
             
-            with st.container(border=True):
-                selected_track = st.selectbox("📌 Select Track", tracks)
+            # Fetch Teams Database
+            teams_data = ws_teams.get_all_records()
+            if not teams_data:
+                st.warning("⚠️ No teams have registered yet.")
+            else:
+                import pandas as pd
+                df_teams = pd.DataFrame(teams_data)
                 
-                # Fetch Teams Database
-                teams_data = ws_teams.get_all_records()
-                if not teams_data:
-                    st.warning("No teams have registered yet.")
+                # Filter teams by the track the judge selected
+                if 'Track' not in df_teams.columns:
+                    st.info("Waiting for the first team to register to build the database.")
                 else:
-                    import pandas as pd
-                    df_teams = pd.DataFrame(teams_data)
-                    
-                    # Filter teams by the track the judge selected
                     track_teams = df_teams[df_teams['Track'] == selected_track]
                     
                     if track_teams.empty:
-                        st.info(f"No teams found in the {selected_track} track.")
+                        st.info(f"No teams found in the {selected_track} track yet.")
                     else:
                         team_list = track_teams['Team Name'].tolist()
                         selected_team = st.selectbox("🚀 Select Startup to Evaluate", team_list)
                         
                         # --- PULL THE VC PROFILE ---
-                        # We use .iloc[-1] to grab the newest submission if they updated their profile
                         team_info = track_teams[track_teams['Team Name'] == selected_team].iloc[-1] 
                         
                         with st.expander(f"📄 View {selected_team}'s Investor Profile", expanded=True):
@@ -366,23 +370,27 @@ def main():
                             submit_score = st.form_submit_button("Submit Final Score", type="primary", use_container_width=True)
                             
                             if submit_score:
-                                timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-                                
-                                # Append to Scores Worksheet (Matches columns A through K)
-                                ws_scores.append_row([
-                                    timestamp,         # Col A
-                                    judge_name,        # Col B
-                                    selected_team,     # Col C
-                                    score_1,           # Col D
-                                    score_2,           # Col E
-                                    score_3,           # Col F
-                                    score_4,           # Col G
-                                    score_5,           # Col H
-                                    score_6,           # Col I
-                                    score_7,           # Col J
-                                    comments           # Col K
-                                ])
-                                st.success(f"✅ Scores securely submitted for {selected_team}!")
+                                # Validation: Check for judge name at the very end!
+                                if not judge_name:
+                                    st.error("⚠️ Please enter your name at the top of the page before submitting.")
+                                else:
+                                    timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                                    
+                                    # Append to Scores Worksheet
+                                    ws_scores.append_row([
+                                        timestamp,         # Col A
+                                        judge_name,        # Col B
+                                        selected_team,     # Col C
+                                        score_1,           # Col D
+                                        score_2,           # Col E
+                                        score_3,           # Col F
+                                        score_4,           # Col G
+                                        score_5,           # Col H
+                                        score_6,           # Col I
+                                        score_7,           # Col J
+                                        comments           # Col K
+                                    ])
+                                    st.success(f"✅ Scores securely submitted for {selected_team}!")
 
    # ---------------------------
     # MODE 3: LEADERBOARD
