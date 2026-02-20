@@ -85,6 +85,7 @@ def main():
             days = time_left.days
             hours = time_left.seconds // 3600
             minutes = (time_left.seconds % 3600) // 60
+            seconds = time_left.seconds % 60  # <-- Calculates the seconds
             
             clock_html = f"""
             <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px;">
@@ -102,13 +103,14 @@ def main():
                     <div style="font-size: 2.5rem; font-family: 'Courier New', monospace; font-weight: bold; color: #FEC30D; line-height: 1;">{minutes:02d}</div>
                     <div style="font-size: 0.75rem; color: #E0E0E0; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;">Mins</div>
                 </div>
+                <div style="font-size: 2.5rem; font-weight: bold; color: #262730; display: flex; align-items: center; padding-bottom: 15px;">:</div>
+                <div style="background-color: #262730; padding: 15px 25px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="font-size: 2.5rem; font-family: 'Courier New', monospace; font-weight: bold; color: #FEC30D; line-height: 1;">{seconds:02d}</div>
+                    <div style="font-size: 0.75rem; color: #E0E0E0; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;">Secs</div>
+                </div>
             </div>
             """
             st.markdown(clock_html, unsafe_allow_html=True)
-            
-            # Fetch tracks from Config
-            config_data = ws_config.get_all_records()
-            tracks = [row["Track Name"] for row in config_data if row.get("Track Name")]
 
             # --- DICTIONARIES ---
             industry_dict = {
