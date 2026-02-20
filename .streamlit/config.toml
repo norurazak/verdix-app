@@ -2,5 +2,5 @@
 primaryColor = "#0072CE"      # Vibrant Blue (From the 'X' and 'Verdix' text for actions/buttons)
 backgroundColor = "#FFFFFF"   # Pure White Background (For a clean, modern, professional look)
 secondaryBackgroundColor = "#F0F4F8" # Light Blue-Grey Sidebar (Subtle contrast, keeps it light)
-textColor = "#003366"         # Deep Blue/Charcoal Text (High readability on white, matches logo)
+textColor = "#252729"         # Deep Blue/Charcoal Text (High readability on white, matches logo)
 font = "sans serif"           # Modern, clean font
