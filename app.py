@@ -124,65 +124,67 @@ def main():
                 "4. Scaling & Revenue (Growth Stage)": "**VC Focus:** Revenue growth, Customer Acquisition Cost (CAC), and Lifetime Value (LTV).\n\n**Description:** The product is being sold. The startup has a repeatable process for acquiring customers. (Deliverable: Financial statements and growth charts)."
             }
 
-            with st.form("registration_form"):
-                st.subheader("1. Team Details")
-                team_name = st.text_input("Startup / Team Name *")
-                track = st.selectbox("Which Track are you competing in? *", tracks)
-                
-                col1, col2 = st.columns(2)
-                with col1:
-                    team_leaders = st.text_area("Team Leaders (Names) *", placeholder="E.g., Alice (CEO), Bob (CTO)")
-                    student_id = st.text_input("Student ID / IC No *", placeholder="E.g., 12345678 or 010203-14-5555")
-                with col2:
-                    programme = st.text_input("Academic Programme *", placeholder="E.g., BSc Computer Science")
-                    faculty = st.text_input("Faculty / School *", placeholder="E.g., School of Science and Technology")
+            # REMOVED st.form HERE
+            
+            st.subheader("1. Team Details")
+            team_name = st.text_input("Startup / Team Name *")
+            track = st.selectbox("Which Track are you competing in? *", tracks)
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                team_leaders = st.text_area("Team Leaders (Names) *", placeholder="E.g., Alice (CEO), Bob (CTO)")
+                student_id = st.text_input("Student ID / IC No *", placeholder="E.g., 12345678 or 010203-14-5555")
+            with col2:
+                programme = st.text_input("Academic Programme *", placeholder="E.g., BSc Computer Science")
+                faculty = st.text_input("Faculty / School *", placeholder="E.g., School of Science and Technology")
 
-                st.subheader("2. Venture Profile")
-                
-                # --- INTERACTIVE INDUSTRY SELECTION ---
-                selected_industries = st.multiselect("Industry / Tags (Select up to 3) *", list(industry_dict.keys()))
-                if selected_industries:
-                    for ind in selected_industries:
-                        st.caption(f"🔹 **{ind}**: {industry_dict[ind]}")
-                
-                # --- INTERACTIVE STAGE SELECTION ---
-                stage = st.selectbox("Stage of Startup *", [""] + list(stage_dict.keys()))
-                if stage:
-                    st.info(stage_dict[stage])
-                
-                value_prop = st.text_area("Value Proposition (The 'Elevator Pitch') *", placeholder="What problem are you solving, and how?")
-                
-                st.subheader("3. Media & Links")
-                st.info("💡 Note: Please ensure all Google Drive/Canva links are set to 'Anyone with the link can view'.")
-                video_link = st.text_input("Pitch Video Link (Optional)", placeholder="YouTube or Vimeo URL")
-                deck_link = st.text_input("Pitch Deck / Logo Link *", placeholder="Google Drive, Canva, or Dropbox URL")
-                
-                submitted = st.form_submit_button("Submit Registration", type="primary")
-                
-                if submitted:
-                    if not team_name or not team_leaders or not student_id or not stage or not value_prop or not deck_link:
-                        st.error("⚠️ Please fill in all required fields (marked with *).")
-                    else:
-                        industry_string = ", ".join(selected_industries)
-                        timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-                        
-                        # APPEND 12 COLUMNS TO GOOGLE SHEETS
-                        ws_teams.append_row([
-                            timestamp,         # Col A
-                            team_name,         # Col B
-                            track,             # Col C
-                            team_leaders,      # Col D
-                            student_id,        # Col E (NEW)
-                            programme,         # Col F
-                            faculty,           # Col G
-                            industry_string,   # Col H
-                            stage,             # Col I
-                            value_prop,        # Col J
-                            video_link,        # Col K
-                            deck_link          # Col L
-                        ])
-                        st.success(f"🎉 {team_name} successfully registered!")
-                        st.balloons()
+            st.subheader("2. Venture Profile")
+            
+            # --- INTERACTIVE INDUSTRY SELECTION ---
+            selected_industries = st.multiselect("Industry / Tags (Select up to 3) *", list(industry_dict.keys()))
+            if selected_industries:
+                for ind in selected_industries:
+                    st.caption(f"🔹 **{ind}**: {industry_dict[ind]}")
+            
+            # --- INTERACTIVE STAGE SELECTION ---
+            stage = st.selectbox("Stage of Startup *", [""] + list(stage_dict.keys()))
+            if stage:
+                st.info(stage_dict[stage])
+            
+            value_prop = st.text_area("Value Proposition (The 'Elevator Pitch') *", placeholder="What problem are you solving, and how?")
+            
+            st.subheader("3. Media & Links")
+            st.info("💡 Note: Please ensure all Google Drive/Canva links are set to 'Anyone with the link can view'.")
+            video_link = st.text_input("Pitch Video Link (Optional)", placeholder="YouTube or Vimeo URL")
+            deck_link = st.text_input("Pitch Deck / Logo Link *", placeholder="Google Drive, Canva, or Dropbox URL")
+            
+            # CHANGED to regular st.button
+            submitted = st.button("Submit Registration", type="primary")
+            
+            if submitted:
+                if not team_name or not team_leaders or not student_id or not stage or not value_prop or not deck_link:
+                    st.error("⚠️ Please fill in all required fields (marked with *).")
+                else:
+                    industry_string = ", ".join(selected_industries)
+                    timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                    
+                    # APPEND 12 COLUMNS TO GOOGLE SHEETS
+                    ws_teams.append_row([
+                        timestamp,         # Col A
+                        team_name,         # Col B
+                        track,             # Col C
+                        team_leaders,      # Col D
+                        student_id,        # Col E 
+                        programme,         # Col F
+                        faculty,           # Col G
+                        industry_string,   # Col H
+                        stage,             # Col I
+                        value_prop,        # Col J
+                        video_link,        # Col K
+                        deck_link          # Col L
+                    ])
+                    st.success(f"🎉 {team_name} successfully registered!")
+                    st.balloons()
 
     # ---------------------------
     # MODE 2: JUDGE PORTAL
