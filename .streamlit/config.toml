@@ -1,6 +1,6 @@
 [theme]
-primaryColor = "#FEC30D"     # iLabs "Innovation Gold" (Vibrant & Energetic)
-backgroundColor = "#000000"  # Clean White Background
-secondaryBackgroundColor = "#262730" # Dark "Tech" Sidebar (High Contrast)
-textColor = "#fffffF"        # Dark Grey Text (Sharp readability)
-font = "sans serif"          # Modern, clean font
+primaryColor = "#0072CE"      # Vibrant Blue (From the 'X' and 'Verdix' text for actions/buttons)
+backgroundColor = "#FFFFFF"   # Pure White Background (For a clean, modern, professional look)
+secondaryBackgroundColor = "#F0F4F8" # Light Blue-Grey Sidebar (Subtle contrast, keeps it light)
+textColor = "#003366"         # Deep Blue/Charcoal Text (High readability on white, matches logo)
+font = "sans serif"           # Modern, clean font
