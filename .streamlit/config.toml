@@ -2,5 +2,5 @@
 primaryColor = "#FEC30D"     # iLabs "Innovation Gold" (Vibrant & Energetic)
 backgroundColor = "#FFFFFF"  # Clean White Background
 secondaryBackgroundColor = "#262730" # Dark "Tech" Sidebar (High Contrast)
-textColor = "#31333F"        # Dark Grey Text (Sharp readability)
+textColor = "#fffffF"        # Dark Grey Text (Sharp readability)
 font = "sans serif"          # Modern, clean font
