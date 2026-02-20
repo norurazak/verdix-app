@@ -68,7 +68,8 @@ def main():
     # ---------------------------
     if menu == "Student Registration":
         st.header("🚀 Startup Registration")
-        st.write("Complete your VC-style profile to enter the pitching platform.")
+        st.write("Startup Registration
+Build a compelling, investor-ready profile to unlock access to the pitching platform. Share your vision, traction, team, and growth strategy in a format designed to match VC expectations—so you can confidently showcase your startup, stand out from the crowd, and connect with the right investors.")
         
         # --- REGISTRATION DEADLINE LOGIC ---
         from datetime import datetime
