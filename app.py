@@ -166,7 +166,7 @@ def main():
                                 ])
                                 st.success("✅ Score Saved!")
 
-    # ---------------------------
+   # ---------------------------
     # MODE 3: LEADERBOARD
     # ---------------------------
     elif menu == "Leaderboard":
@@ -195,8 +195,25 @@ def main():
                 leaderboard = df_scores.groupby('Team Name')[['Total Raw']].mean().reset_index()
                 leaderboard = leaderboard.sort_values(by='Total Raw', ascending=False)
                 
-                st.dataframe(leaderboard)
-                st.bar_chart(leaderboard.set_index('Team Name'))
+                # --- UPGRADE 1: DASHBOARD METRICS ---
+                st.markdown("### 🌟 Current Standings")
+                top_team = leaderboard.iloc[0]
+                
+                col1, col2, col3 = st.columns(3)
+                col1.metric(label="🥇 1st Place", value=top_team['Team Name'])
+                col2.metric(label="Highest Score", value=f"{top_team['Total Raw']:.2f} pts")
+                col3.metric(label="Total Teams Judged", value=len(leaderboard))
+                
+                st.divider()
+                
+                # --- COLORFUL BAR CHART & HIDDEN TABLE ---
+                st.bar_chart(leaderboard.set_index('Team Name')['Total Raw'], color="#FEC30D")
+                
+                with st.expander("📄 View Detailed Score Table"):
+                    st.dataframe(leaderboard, hide_index=True, use_container_width=True)
+            
+            else:
+                st.info("Waiting for the first scores to come in...")
 
 if __name__ == "__main__":
     main()
