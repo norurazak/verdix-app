@@ -288,94 +288,101 @@ def main():
                         st.info("Your investor profile has been securely logged. The judging panel will review your materials shortly.")
 
     # ---------------------------
-    # MODE 2: JUDGE PORTAL
+    # MODE 2: JUDGE'S CONSOLE
     # ---------------------------
-    elif menu == "Judge Portal":
-        st.header("👩‍⚖️ Judge's Console")
+    elif menu == "Judge's Console":
         
-        judge_name = st.text_input("Enter Judge Name", key="judge_login")
+        st.markdown("<h1 style='text-align: center;'>⚖️ Judge's Console</h1>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #555555; font-size: 1.1rem;'>Review startup profiles and submit your official evaluations.</p>", unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        with st.container(border=True):
+            judge_name = st.text_input("👨‍⚖️ Enter Your Name (Judge) *")
         
         if judge_name:
-            # Fetch Config Data for Tracks & Venues
+            # FIX: We changed 'Track List' to 'Track Name' to match the database!
             config_data = ws_config.get_all_records()
-            df_config = pd.DataFrame(config_data)
+            tracks = [str(row["Track Name"]) for row in config_data if row.get("Track Name")]
             
-            if not df_config.empty:
-                track_list = df_config['Track List'].tolist()
-                selected_track = st.selectbox("Select Track to Judge", track_list)
+            with st.container(border=True):
+                selected_track = st.selectbox("📌 Select Track", tracks)
                 
-                # Show Venue Info
-                venue_info = df_config[df_config['Track List'] == selected_track]['Venue'].values
-                if len(venue_info) > 0:
-                    st.info(f"📍 Venue: **{venue_info[0]}**")
-            else:
-                st.error("No tracks configured in 'Config' tab.")
-                st.stop()
-
-            st.divider()
-
-            # Fetch Teams
-            teams_data = ws_teams.get_all_records()
-            df_teams = pd.DataFrame(teams_data)
-            
-            if not df_teams.empty:
-                # Filter teams by selected track
-                track_teams = df_teams[df_teams['Track'] == selected_track]
-                
-                st.write(f"Showing **{len(track_teams)}** teams in {selected_track}")
-                
-                # Display Teams
-                for index, row in track_teams.iterrows():
-                    with st.expander(f"🎤 {row['Team Name']}", expanded=False):
-                        st.subheader(row['Team Name'])
-                        st.write(f"**Value Prop:** {row['Value Proposition']}")
-                        if row['Link to Logo']:
-                            st.markdown(f"[View Slides/Logo]({row['Link to Logo']})")
+                # Fetch Teams Database
+                teams_data = ws_teams.get_all_records()
+                if not teams_data:
+                    st.warning("No teams have registered yet.")
+                else:
+                    import pandas as pd
+                    df_teams = pd.DataFrame(teams_data)
+                    
+                    # Filter teams by the track the judge selected
+                    track_teams = df_teams[df_teams['Track'] == selected_track]
+                    
+                    if track_teams.empty:
+                        st.info(f"No teams found in the {selected_track} track.")
+                    else:
+                        team_list = track_teams['Team Name'].tolist()
+                        selected_team = st.selectbox("🚀 Select Startup to Evaluate", team_list)
                         
-                        st.markdown("---")
-                        st.write("**📝 Score Card** (0-5 Scale)")
+                        # --- PULL THE VC PROFILE ---
+                        # We use .iloc[-1] to grab the newest submission if they updated their profile
+                        team_info = track_teams[track_teams['Team Name'] == selected_team].iloc[-1] 
                         
-                        # SCORING FORM - EXACT SEQUENCE
-                        with st.form(f"score_{index}"):
-                            # Row 1
-                            c1, c2 = st.columns(2)
-                            with c1: prob = st.slider("Problem Sol-Fit", 0, 5, 0)
-                            with c2: comp = st.slider("Competitor Market", 0, 5, 0)
+                        with st.expander(f"📄 View {selected_team}'s Investor Profile", expanded=True):
+                            st.markdown(f"**Value Proposition:** {team_info.get('Value Proposition', 'N/A')}")
+                            st.markdown(f"**Industry / Tags:** {team_info.get('Industry / Tags', 'N/A')}")
+                            st.markdown(f"**Current Stage:** {team_info.get('Stage of Startup', 'N/A')}")
+                            st.markdown("---")
+                            st.markdown(f"**Founders:** {team_info.get('Team Leaders (Names)', 'N/A')}")
+                            st.markdown(f"**Academic Background:** {team_info.get('University / Institution', 'N/A')} - {team_info.get('Faculty / School', 'N/A')}")
                             
-                            # Row 2
-                            c3, c4 = st.columns(2)
-                            with c3: gtm = st.slider("GTM Strategy", 0, 5, 0)
-                            with c4: innov = st.slider("Innovation", 0, 5, 0)
+                            st.markdown("<br>", unsafe_allow_html=True)
+                            col_link1, col_link2 = st.columns(2)
+                            deck_link = team_info.get('Pitch Deck / Logo Link', '')
+                            video_link = team_info.get('Pitch Video Link', '')
                             
-                            # Row 3
-                            c5, c6 = st.columns(2)
-                            with c5: proto = st.slider("Prototype", 0, 5, 0)
-                            with c6: rev = st.slider("Revenue Model", 0, 5, 0)
+                            with col_link1:
+                                if deck_link: st.markdown(f"[🔗 Open Pitch Deck]({deck_link})")
+                            with col_link2:
+                                if video_link: st.markdown(f"[🎥 Open Pitch Video]({video_link})")
+                        
+                        # --- SCORING FORM ---
+                        st.markdown("<h3 style='margin-top: 20px;'>📊 Evaluation Criteria</h3>", unsafe_allow_html=True)
+                        
+                        from datetime import datetime
+                        with st.form("scoring_form"):
+                            st.info("Score each category from 1 (Poor) to 10 (Excellent).")
                             
-                            # Row 4
-                            story = st.slider("Story Telling", 0, 5, 0)
+                            score_1 = st.slider("1. Problem-Solution Fit", 1, 10, 5)
+                            score_2 = st.slider("2. Competitor & Market Analysis", 1, 10, 5)
+                            score_3 = st.slider("3. Go-to-Market (GTM) Strategy", 1, 10, 5)
+                            score_4 = st.slider("4. Innovation / Differentiation", 1, 10, 5)
+                            score_5 = st.slider("5. Prototype / MVP Readiness", 1, 10, 5)
+                            score_6 = st.slider("6. Revenue Model / Financials", 1, 10, 5)
+                            score_7 = st.slider("7. Storytelling & Pitch Delivery", 1, 10, 5)
                             
-                            comment = st.text_area("Comments (Optional)")
+                            comments = st.text_area("Feedback / Comments (Optional)", placeholder="What did they do well? What needs improvement?")
                             
-                            submit_score = st.form_submit_button("Submit Score")
+                            submit_score = st.form_submit_button("Submit Final Score", type="primary", use_container_width=True)
                             
                             if submit_score:
-                                # SAVE TO GOOGLE SHEET - EXACT COLUMN ORDER
+                                timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                                
+                                # Append to Scores Worksheet (Matches columns A through K)
                                 ws_scores.append_row([
-                                    judge_name,           # A
-                                    row['Team Name'],     # B
-                                    selected_track,       # C
-                                    prob,                 # D: Problem Sol-Fit
-                                    comp,                 # E: Competitor Market
-                                    gtm,                  # F: GTM Strategy
-                                    innov,                # G: Innovation
-                                    proto,                # H: Prototype
-                                    rev,                  # I: Revenue Model
-                                    story,                # J: Story Telling
-                                    comment,              # K
-                                    str(datetime.now())   # L
+                                    timestamp,         # Col A
+                                    judge_name,        # Col B
+                                    selected_team,     # Col C
+                                    score_1,           # Col D
+                                    score_2,           # Col E
+                                    score_3,           # Col F
+                                    score_4,           # Col G
+                                    score_5,           # Col H
+                                    score_6,           # Col I
+                                    score_7,           # Col J
+                                    comments           # Col K
                                 ])
-                                st.toast(f"✅ Score saved for {row['Team Name']}!", icon="🎉")
+                                st.success(f"✅ Scores securely submitted for {selected_team}!")
 
    # ---------------------------
     # MODE 3: LEADERBOARD
