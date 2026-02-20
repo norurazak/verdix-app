@@ -164,7 +164,7 @@ def main():
                                     comment,              # K
                                     str(datetime.now())   # L
                                 ])
-                                st.success("✅ Score Saved!")
+                                st.toast(f"✅ Score saved for {row['Team Name']}!", icon="🎉")
 
    # ---------------------------
     # MODE 3: LEADERBOARD
