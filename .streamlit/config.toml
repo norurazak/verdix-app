@@ -1,6 +1,6 @@
 [theme]
 primaryColor = "#FEC30D"     # iLabs "Innovation Gold" (Vibrant & Energetic)
-backgroundColor = "#FFFFFF"  # Clean White Background
+backgroundColor = "#000000"  # Clean White Background
 secondaryBackgroundColor = "#262730" # Dark "Tech" Sidebar (High Contrast)
 textColor = "#fffffF"        # Dark Grey Text (Sharp readability)
 font = "sans serif"          # Modern, clean font
