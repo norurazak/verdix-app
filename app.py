@@ -106,7 +106,7 @@ def main():
             """
             st.markdown(clock_html, unsafe_allow_html=True)
             
-            # Continue with existing data fetching
+            # Fetch tracks from Config
             config_data = ws_config.get_all_records()
             tracks = [row["Track Name"] for row in config_data if row.get("Track Name")]
 
@@ -166,13 +166,13 @@ def main():
                 col1, col2 = st.columns(2)
                 with col1:
                     team_name = st.text_input("Startup / Team Name *")
+                    track = st.selectbox("Which Track are you competing in? *", tracks)
                     team_leaders = st.text_area("Team Leaders (Names) *", placeholder="E.g., Alice (CEO), Bob (CTO)")
                     student_id = st.text_input("Student ID / IC No *", placeholder="E.g., 12345678 or 010203-14-5555")
                 with col2:
-                    track = st.selectbox("Which Track are you competing in? *", tracks)
-                    university = st.text_input("University *", placeholder="E.g., Sunway University")
-                    programme = st.text_input("Academic Programme *", placeholder="E.g., BSc Computer Science")
+                    university = st.text_input("University / Institution *", placeholder="E.g., Sunway University")
                     faculty = st.text_input("Faculty / School *", placeholder="E.g., School of Science and Technology")
+                    programme = st.text_input("Academic Programme *", placeholder="E.g., BSc Computer Science")
 
             # --- CARD 2: VENTURE PROFILE ---
             with st.container(border=True):
@@ -212,12 +212,14 @@ def main():
                 submitted = st.button("🚀 Submit Registration", type="primary", use_container_width=True)
             
             if submitted:
-                if not team_name or not team_leaders or not student_id or not university or not stage or not value_prop or not deck_link:
+                # Validation check includes Track and all Academic details
+                if not team_name or not track or not team_leaders or not student_id or not university or not faculty or not programme or not stage or not value_prop or not deck_link:
                     st.error("⚠️ Please fill in all required fields (marked with *).")
                 else:
                     industry_string = ", ".join(selected_industries)
                     timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                     
+                    # APPEND 14 COLUMNS TO GOOGLE SHEETS
                     ws_teams.append_row([
                         timestamp,         # Col A
                         submission_type,   # Col B
@@ -226,8 +228,8 @@ def main():
                         team_leaders,      # Col E
                         student_id,        # Col F 
                         university,        # Col G
-                        programme,         # Col H
-                        faculty,           # Col I
+                        faculty,           # Col H
+                        programme,         # Col I
                         industry_string,   # Col J
                         stage,             # Col K
                         value_prop,        # Col L
@@ -236,10 +238,10 @@ def main():
                     ])
                     
                     if "Update" in submission_type:
-                        st.success(f"🔄 {team_name}'s profile has been successfully updated in our system!")
+                        st.success(f"✅ {team_name}'s profile has been securely updated in the Verdix system.")
                     else:
-                        st.success(f"🎉 {team_name} successfully registered!")
-                        st.balloons()
+                        st.success(f"✅ {team_name} successfully registered.")
+                        st.info("Your investor profile has been securely logged. The judging panel will review your materials shortly.")
 
     # ---------------------------
     # MODE 2: JUDGE PORTAL
