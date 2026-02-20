@@ -70,25 +70,60 @@ def main():
         st.header("🚀 Startup Registration")
         st.write("Build a compelling, investor-ready profile to unlock access to the pitching platform. Share your vision, traction, team, and growth strategy in a format designed to match VC expectations—so you can confidently showcase your startup, stand out from the crowd, and connect with the right investors.")
         
-        # --- REGISTRATION DEADLINE LOGIC ---
-        
-        # --- REGISTRATION DEADLINE LOGIC ---
         from datetime import datetime
-        # Set your deadline here (Year, Month, Day, Hour, Minute)
         deadline = datetime(2026, 3, 15, 23, 59) 
         now = datetime.now()
         
         if now > deadline:
             st.error("🚨 Registration is officially closed.")
         else:
-            # Calculate remaining time
             time_left = deadline - now
             st.warning(f"⏳ Registration closes in {time_left.days} days, {time_left.seconds // 3600} hours!")
             
-            # Fetch tracks from Config
             config_data = ws_config.get_all_records()
             tracks = [row["Track Name"] for row in config_data if row.get("Track Name")]
             
+            # --- DICTIONARIES FOR INTERACTIVE DESCRIPTIONS ---
+            industry_dict = {
+                "Agentic AI": "Autonomous agents and multi-step AI orchestration systems.",
+                "GenAI & LLMs": "Creative tools, text generation, and model infrastructure.",
+                "SaaS (Enterprise)": "Cloud software and B2B digital transformation.",
+                "Cybersecurity": "Data privacy, threat detection, and zero-trust systems.",
+                "Deep Tech": "Quantum computing, advanced materials, and semiconductors.",
+                "Web3 & Blockchain": "DeFi, digital assets, and decentralized infra.",
+                "CloudTech & DevOps": "Server management, scaling tools, and developer platforms.",
+                "HealthTech": "Telemedicine, digital diagnostics, and patient management.",
+                "BioTech": "Drug discovery, genomics, and lab-grown alternatives.",
+                "MedTech": "Medical hardware, robotics for surgery, and wearable devices.",
+                "FemTech": "Women’s health, reproductive tech, and menopause support.",
+                "Longevity & Aging": "Tech for elder care and life-extension science.",
+                "Wellness & Mental Health": "Mindfulness apps and AI-assisted therapy.",
+                "ClimateTech": "Carbon capture, ESG reporting, and circular economy tools.",
+                "CleanTech": "Renewable energy (Solar, Wind, Fusion) and grid storage.",
+                "AgTech": "Precision farming, vertical agriculture, and soil health.",
+                "FoodTech": "Synthetic proteins, food waste reduction, and nutrition AI.",
+                "Mobility & EV": "Electric vehicles, charging networks, and battery tech.",
+                "Logistics & Supply Chain": "Autonomous shipping and last-mile delivery.",
+                "SpaceTech": "Orbital logistics, satellite data, and space exploration.",
+                "PropTech & Construction": "Smart buildings and digital real estate management.",
+                "FinTech": "Payments, neobanks, and automated wealth management.",
+                "InsurTech": "Digital underwriting and risk assessment platforms.",
+                "EdTech": "Gamified learning, AI tutoring, and LMS platforms.",
+                "GovTech": "Citizen services and public sector efficiency software.",
+                "DefenseTech": "National security tech, drones, and tactical software.",
+                "Retail & E-commerce": "D2C infrastructure and omnichannel retail.",
+                "Creator Economy": "Monetization tools and influencer marketing platforms.",
+                "Gaming & Metaverse": "VR/AR, eSports, and interactive entertainment.",
+                "AdTech & MarTech": "AI-driven marketing and customer acquisition."
+            }
+
+            stage_dict = {
+                "1. Concept & Ideation (Pre-Product)": "**VC Focus:** Founder brilliance, market size, and the 'Why Now?' factor.\n\n**Description:** The team has identified a major problem and a theoretical solution. There is no working software or hardware yet. (Deliverable: Pitch deck and market research).",
+                "2. Prototype / Alpha (Proof of Concept)": "**VC Focus:** Technical feasibility and early design thinking.\n\n**Description:** A 'low-fidelity' version of the product exists. It proves the core technology or service is possible. (Deliverable: Demo or clickable wireframes).",
+                "3. MVP & Pilot (Early Traction)": "**VC Focus:** User engagement, retention, and initial feedback loops.\n\n**Description:** The Minimum Viable Product is live and in the hands of actual users. The team is currently testing for 'Product-Market Fit.' (Deliverable: Usage data or LOIs).",
+                "4. Scaling & Revenue (Growth Stage)": "**VC Focus:** Revenue growth, Customer Acquisition Cost (CAC), and Lifetime Value (LTV).\n\n**Description:** The product is being sold. The startup has a repeatable process for acquiring customers. (Deliverable: Financial statements and growth charts)."
+            }
+
             with st.form("registration_form"):
                 st.subheader("1. Team Details")
                 team_name = st.text_input("Startup / Team Name *")
@@ -96,30 +131,24 @@ def main():
                 
                 col1, col2 = st.columns(2)
                 with col1:
-                    team_leaders = st.text_area("Team Leaders (Names) *", placeholder="E.g., Alice Tan (CEO)")
+                    team_leaders = st.text_area("Team Leaders (Names) *", placeholder="E.g., Alice (CEO), Bob (CTO)")
+                    student_id = st.text_input("Student ID / IC No *", placeholder="E.g., 12345678 or 010203-14-5555")
                 with col2:
                     programme = st.text_input("Academic Programme *", placeholder="E.g., BSc Computer Science")
-                    faculty = st.text_input("Faculty / School *", placeholder="E.g., Faculty of Engineering and Technology")
+                    faculty = st.text_input("Faculty / School *", placeholder="E.g., School of Science and Technology")
 
                 st.subheader("2. Venture Profile")
                 
-                # Comprehensive Industry List
-                industries = [
-                    "Agentic AI", "GenAI & LLMs", "SaaS (Enterprise)", "Cybersecurity", "Deep Tech", "Web3 & Blockchain", "CloudTech & DevOps",
-                    "HealthTech", "BioTech", "MedTech", "FemTech", "Longevity & Aging", "Wellness & Mental Health",
-                    "ClimateTech", "CleanTech", "AgTech", "FoodTech", "Mobility & EV", "Logistics & Supply Chain", "SpaceTech", "PropTech & Construction",
-                    "FinTech", "InsurTech", "EdTech", "GovTech", "DefenseTech", "Retail & E-commerce", "Creator Economy", "Gaming & Metaverse", "AdTech"
-                ]
-                selected_industries = st.multiselect("Industry / Tags (Select up to 3) *", industries)
+                # --- INTERACTIVE INDUSTRY SELECTION ---
+                selected_industries = st.multiselect("Industry / Tags (Select up to 3) *", list(industry_dict.keys()))
+                if selected_industries:
+                    for ind in selected_industries:
+                        st.caption(f"🔹 **{ind}**: {industry_dict[ind]}")
                 
-                # Stage of Startup
-                stages = [
-                    "1. Concept & Ideation (Pre-Product)",
-                    "2. Prototype / Alpha (Proof of Concept)",
-                    "3. MVP & Pilot (Early Traction)",
-                    "4. Scaling & Revenue (Growth Stage)"
-                ]
-                stage = st.selectbox("Stage of Startup *", stages, help="Select the stage that best describes your current progress.")
+                # --- INTERACTIVE STAGE SELECTION ---
+                stage = st.selectbox("Stage of Startup *", [""] + list(stage_dict.keys()))
+                if stage:
+                    st.info(stage_dict[stage])
                 
                 value_prop = st.text_area("Value Proposition (The 'Elevator Pitch') *", placeholder="What problem are you solving, and how?")
                 
@@ -131,27 +160,26 @@ def main():
                 submitted = st.form_submit_button("Submit Registration", type="primary")
                 
                 if submitted:
-                    # Basic Validation
-                    if not team_name or not team_leaders or not value_prop or not deck_link:
+                    if not team_name or not team_leaders or not student_id or not stage or not value_prop or not deck_link:
                         st.error("⚠️ Please fill in all required fields (marked with *).")
                     else:
-                        # Convert list of industries to a comma-separated string
                         industry_string = ", ".join(selected_industries)
                         timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                         
-                        # APPEND TO GOOGLE SHEETS (Exactly 11 columns matching your sheet)
+                        # APPEND 12 COLUMNS TO GOOGLE SHEETS
                         ws_teams.append_row([
                             timestamp,         # Col A
                             team_name,         # Col B
                             track,             # Col C
                             team_leaders,      # Col D
-                            programme,         # Col E
-                            faculty,           # Col F
-                            industry_string,   # Col G
-                            stage,             # Col H
-                            value_prop,        # Col I
-                            video_link,        # Col J
-                            deck_link          # Col K
+                            student_id,        # Col E (NEW)
+                            programme,         # Col F
+                            faculty,           # Col G
+                            industry_string,   # Col H
+                            stage,             # Col I
+                            value_prop,        # Col J
+                            video_link,        # Col K
+                            deck_link          # Col L
                         ])
                         st.success(f"🎉 {team_name} successfully registered!")
                         st.balloons()
