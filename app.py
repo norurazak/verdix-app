@@ -292,6 +292,7 @@ def main():
     # ---------------------------
     elif menu == "Judge's Console":
         
+        # --- HERO SECTION ---
         st.markdown("<h1 style='text-align: center;'>⚖️ Judge's Console</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #555555; font-size: 1.1rem;'>Review startup profiles and submit your official evaluations.</p>", unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
@@ -299,10 +300,7 @@ def main():
         with st.container(border=True):
             judge_name = st.text_input("👨‍⚖️ Enter Your Name (Judge) *", placeholder="e.g., John Doe")
         
-        # --- REMOVED THE 'if judge_name:' BLOCKER ---
-        # Now everything below will load instantly!
-        
-        # Fetch Tracks
+        # Fetch Tracks (Make sure your Config tab has exactly "Track Name" in row 1!)
         config_data = ws_config.get_all_records()
         tracks = [str(row["Track Name"]) for row in config_data if row.get("Track Name")]
         
@@ -317,10 +315,11 @@ def main():
                 import pandas as pd
                 df_teams = pd.DataFrame(teams_data)
                 
-                # Filter teams by the track the judge selected
+                # Check if the database has caught the new 14-column format yet
                 if 'Track' not in df_teams.columns:
-                    st.info("Waiting for the first team to register to build the database.")
+                    st.info("Waiting for the first team to register to build the database format.")
                 else:
+                    # Filter teams by the track the judge selected
                     track_teams = df_teams[df_teams['Track'] == selected_track]
                     
                     if track_teams.empty:
@@ -370,7 +369,6 @@ def main():
                             submit_score = st.form_submit_button("Submit Final Score", type="primary", use_container_width=True)
                             
                             if submit_score:
-                                # Validation: Check for judge name at the very end!
                                 if not judge_name:
                                     st.error("⚠️ Please enter your name at the top of the page before submitting.")
                                 else:
