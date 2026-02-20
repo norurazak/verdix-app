@@ -138,7 +138,7 @@ def main():
                 programme = st.text_input("Academic Programme *", placeholder="E.g., BSc Computer Science")
                 faculty = st.text_input("Faculty / School *", placeholder="E.g., School of Science and Technology")
 
-            st.subheader("2. Venture Profile")
+            st.subheader("2. Team Profile")
             
             # --- INTERACTIVE INDUSTRY SELECTION ---
             selected_industries = st.multiselect("Industry / Tags (Select up to 3) *", list(industry_dict.keys()))
