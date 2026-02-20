@@ -306,39 +306,46 @@ def main():
         # --- LOGIN SCREEN ---
         if not st.session_state.judge_logged_in:
             with st.container(border=True):
-                st.markdown("### 🔐 Secure Login")
-                judge_name_input = st.text_input("👨‍⚖️ Enter Your Full Name")
-                judge_pass_input = st.text_input("🔑 Event Access Code", type="password")
+                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>🔐 Secure Login</div>", unsafe_allow_html=True)
                 
-                if st.button("Log In", type="primary"):
-                    if not judge_name_input:
-                        st.error("⚠️ Please enter your name so we can record your scores.")
-                    elif judge_pass_input == "verdix2026":  # <--- CHANGE YOUR PASSWORD HERE
-                        st.session_state.judge_logged_in = True
-                        st.session_state.current_judge_name = judge_name_input
-                        st.rerun() # Refreshes the page to unlock the portal
-                    else:
-                        st.error("❌ Incorrect Access Code.")
+                judge_name_input = st.text_input("👨‍⚖️ Enter Your Full Name")
+                judge_pass_input = st.text_input("🔑 Event Access Code", type="password", help="Enter the shared event password provided by the organizers.")
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+                _, center_col, _ = st.columns([1, 2, 1])
+                with center_col:
+                    if st.button("Log In to Portal", type="primary", use_container_width=True):
+                        if not judge_name_input:
+                            st.error("⚠️ Please enter your name so we can record your scores.")
+                        elif judge_pass_input == "verdix2026":  # <--- CHANGE YOUR PASSWORD HERE
+                            st.session_state.judge_logged_in = True
+                            st.session_state.current_judge_name = judge_name_input
+                            st.rerun() 
+                        else:
+                            st.error("❌ Incorrect Access Code.")
         
         # --- THE SECURE PORTAL (Only visible if logged in) ---
         else:
-            # Display who is logged in and provide a log out button
+            # Header with Logout
             col_name, col_logout = st.columns([3, 1])
             with col_name:
-                st.success(f"✅ Logged in securely as: **{st.session_state.current_judge_name}**")
+                st.success(f"✅ Secure Session Active: **{st.session_state.current_judge_name}**")
             with col_logout:
-                if st.button("Log Out"):
+                if st.button("Log Out", use_container_width=True):
                     st.session_state.judge_logged_in = False
                     st.session_state.current_judge_name = ""
                     st.rerun()
             
-            st.divider()
+            st.markdown("<br>", unsafe_allow_html=True)
 
             # Fetch Tracks using the new "Track Name" header
             config_data = ws_config.get_all_records()
             tracks = [str(row["Track Name"]) for row in config_data if row.get("Track Name")]
             
+            # --- CARD 1: TEAM SELECTION ---
             with st.container(border=True):
+                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Startup Selection</div>", unsafe_allow_html=True)
+                
                 selected_track = st.selectbox("📌 Select Track", tracks)
                 
                 # Fetch Teams Database
@@ -363,13 +370,14 @@ def main():
                             # --- PULL THE VC PROFILE ---
                             team_info = track_teams[track_teams['Team Name'] == selected_team].iloc[-1] 
                             
+                            st.markdown("<br>", unsafe_allow_html=True)
                             with st.expander(f"📄 View {selected_team}'s Investor Profile", expanded=True):
-                                st.markdown(f"**Value Proposition:** {team_info.get('Value Proposition', 'N/A')}")
-                                st.markdown(f"**Industry / Tags:** {team_info.get('Industry / Tags', 'N/A')}")
-                                st.markdown(f"**Current Stage:** {team_info.get('Stage of Startup', 'N/A')}")
+                                st.markdown(f"**💡 Value Proposition:** {team_info.get('Value Proposition', 'N/A')}")
+                                st.markdown(f"**🏷️ Industry / Tags:** {team_info.get('Industry / Tags', 'N/A')}")
+                                st.markdown(f"**📈 Current Stage:** {team_info.get('Stage of Startup', 'N/A')}")
                                 st.markdown("---")
-                                st.markdown(f"**Founders:** {team_info.get('Team Leaders (Names)', 'N/A')}")
-                                st.markdown(f"**Academic Background:** {team_info.get('University / Institution', 'N/A')} - {team_info.get('Faculty / School', 'N/A')}")
+                                st.markdown(f"**👥 Founders:** {team_info.get('Team Leaders (Names)', 'N/A')}")
+                                st.markdown(f"**🎓 Academic Background:** {team_info.get('University / Institution', 'N/A')} - {team_info.get('Faculty / School', 'N/A')}")
                                 
                                 st.markdown("<br>", unsafe_allow_html=True)
                                 col_link1, col_link2 = st.columns(2)
@@ -381,43 +389,48 @@ def main():
                                 with col_link2:
                                     if video_link: st.markdown(f"[🎥 Open Pitch Video]({video_link})")
                             
-                            # --- SCORING FORM ---
-                            st.markdown("<h3 style='margin-top: 20px;'>📊 Evaluation Criteria</h3>", unsafe_allow_html=True)
+            # --- CARD 2: SCORING FORM ---
+            if 'track_teams' in locals() and not track_teams.empty:
+                st.markdown("<br>", unsafe_allow_html=True)
+                with st.container(border=True):
+                    st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Evaluation Rubric</div>", unsafe_allow_html=True)
+                    
+                    from datetime import datetime
+                    with st.form("scoring_form"):
+                        st.info("💡 **Hover over the (?) icon next to each criterion for the detailed scoring definition.** Score from 1 (Poor) to 10 (Excellent).")
+                        
+                        score_1 = st.slider("1. Problem-Solution Fit", 1, 10, 5, help="Does the proposed solution effectively address a clearly defined, highly painful, and significant market problem?")
+                        score_2 = st.slider("2. Competitor & Market Analysis", 1, 10, 5, help="Demonstrates a deep understanding of the competitive landscape, target market size (TAM/SAM/SOM), and possesses a clear unfair advantage.")
+                        score_3 = st.slider("3. Go-to-Market (GTM) Strategy", 1, 10, 5, help="Feasibility, clarity, and cost-effectiveness of their customer acquisition strategy and intended distribution channels.")
+                        score_4 = st.slider("4. Innovation / Differentiation", 1, 10, 5, help="Uniqueness of the core technology, product design, or business model. Is it defensible against copycats?")
+                        score_5 = st.slider("5. Prototype / MVP Readiness", 1, 10, 5, help="Current state of product development, technical feasibility, and evidence of early user feedback or traction.")
+                        score_6 = st.slider("6. Revenue Model / Financials", 1, 10, 5, help="Clarity and realism of the monetization strategy, pricing model, unit economics, and projected path to profitability.")
+                        score_7 = st.slider("7. Storytelling & Pitch Delivery", 1, 10, 5, help="Clarity, confidence, and persuasiveness of the presentation. Do the founders exhibit strong domain expertise and passion?")
+                        
+                        st.markdown("<br>", unsafe_allow_html=True)
+                        comments = st.text_area("Feedback / Comments (Optional)", placeholder="What did they do well? What critical areas need improvement?")
+                        
+                        st.markdown("<br>", unsafe_allow_html=True)
+                        submit_score = st.form_submit_button("✅ Submit Final Score", type="primary", use_container_width=True)
+                        
+                        if submit_score:
+                            timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                             
-                            from datetime import datetime
-                            with st.form("scoring_form"):
-                                st.info("Score each category from 1 (Poor) to 10 (Excellent).")
-                                
-                                score_1 = st.slider("1. Problem-Solution Fit", 1, 10, 5)
-                                score_2 = st.slider("2. Competitor & Market Analysis", 1, 10, 5)
-                                score_3 = st.slider("3. Go-to-Market (GTM) Strategy", 1, 10, 5)
-                                score_4 = st.slider("4. Innovation / Differentiation", 1, 10, 5)
-                                score_5 = st.slider("5. Prototype / MVP Readiness", 1, 10, 5)
-                                score_6 = st.slider("6. Revenue Model / Financials", 1, 10, 5)
-                                score_7 = st.slider("7. Storytelling & Pitch Delivery", 1, 10, 5)
-                                
-                                comments = st.text_area("Feedback / Comments (Optional)", placeholder="What did they do well? What needs improvement?")
-                                
-                                submit_score = st.form_submit_button("Submit Final Score", type="primary", use_container_width=True)
-                                
-                                if submit_score:
-                                    timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-                                    
-                                    # Append to Scores Worksheet using the Session State Name
-                                    ws_scores.append_row([
-                                        timestamp,         # Col A
-                                        st.session_state.current_judge_name, # Col B (Pulls from memory!)
-                                        selected_team,     # Col C
-                                        score_1,           # Col D
-                                        score_2,           # Col E
-                                        score_3,           # Col F
-                                        score_4,           # Col G
-                                        score_5,           # Col H
-                                        score_6,           # Col I
-                                        score_7,           # Col J
-                                        comments           # Col K
-                                    ])
-                                    st.success(f"✅ Scores securely submitted for {selected_team}!")
+                            # Append to Scores Worksheet
+                            ws_scores.append_row([
+                                timestamp,         # Col A
+                                st.session_state.current_judge_name, # Col B
+                                selected_team,     # Col C
+                                score_1,           # Col D
+                                score_2,           # Col E
+                                score_3,           # Col F
+                                score_4,           # Col G
+                                score_5,           # Col H
+                                score_6,           # Col I
+                                score_7,           # Col J
+                                comments           # Col K
+                            ])
+                            st.success(f"🎉 Evaluation securely logged for {selected_team}! You may now select another startup.")
 
    # ---------------------------
     # MODE 3: LEADERBOARD
