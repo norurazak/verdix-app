@@ -132,7 +132,7 @@ def main():
         st.stop()
 
     # Sidebar Navigation
-    menu = st.sidebar.radio(["Student Registration", "Judge Portal", "Leaderboard"])
+    menu = st.sidebar.radio("Navigation", ["Student Registration", "Judge Portal", "Leaderboard"])
 
     # Fetch tracks globally
     config_data = ws_config.get_all_records()
