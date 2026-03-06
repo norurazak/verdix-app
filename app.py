@@ -31,15 +31,32 @@ def main():
     # Removed the scale icon from the browser tab
     st.set_page_config(page_title="Verdix", layout="centered")
     
-   # --- UX & VERDIX CUSTOM BRANDING ---
+    # --- UX & VERDIX CUSTOM BRANDING ---
     hide_st_style = """
             <style>
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             header {visibility: hidden;}
 
-            /* --- 1. PRIMARY SUBMIT BUTTONS --- */
-            .stButton > button[kind="primary"] {
+            /* --- 1. GLOBAL DASHBOARD BACKGROUND --- */
+            .stApp {
+                background-color: #0D101A !important;
+            }
+            h1, h2, h3, h4, p, span, label {
+                color: #FFFFFF !important;
+            }
+
+            /* --- 2. DASHBOARD CARDS & CONTAINERS --- */
+            [data-testid="stVerticalBlockBorderWrapper"] {
+                background-color: #1A1A1A !important;
+                border: 1px solid #333333 !important;
+                border-radius: 12px !important;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
+            }
+
+            /* --- 3. PRIMARY BUTTONS (Including Form Submit) --- */
+            div[data-testid="stButton"] > button[kind="primary"], 
+            div[data-testid="stFormSubmitButton"] > button[kind="primary"] {
                 background-color: #BF1A1A !important;
                 border: 2px solid #BF1A1A !important;
                 color: #FFFFFF !important;
@@ -47,23 +64,76 @@ def main():
                 font-weight: bold !important;
                 transition: all 0.3s ease !important;
             }
-            .stButton > button[kind="primary"]:hover {
-                background-color: #0A0A0A !important; /* Turns deep black on hover */
-                color: #FFFFFF !important; /* FIX: Text stays bright white for readability */
+            div[data-testid="stButton"] > button[kind="primary"]:hover, 
+            div[data-testid="stFormSubmitButton"] > button[kind="primary"]:hover {
+                background-color: #0A0A0A !important; /* Deep black */
+                color: #FFFFFF !important; /* Text stays bright white */
                 border: 2px solid #BF1A1A !important;
                 transform: scale(1.02);
-                box-shadow: 0 4px 15px rgba(191, 26, 26, 0.6) !important; /* FIX: Added Verdix red glow shadow for depth */
+                box-shadow: 0 4px 15px rgba(191, 26, 26, 0.6) !important; /* Red glow */
             }
 
-            /* --- 2. SIDEBAR NAVIGATION BARS --- */
-            /* Hide the default radio button circles */
+            /* --- 4. SECONDARY BUTTONS (Log Out, Lock System) --- */
+            div[data-testid="stButton"] > button[kind="secondary"] {
+                background-color: transparent !important;
+                border: 2px solid #333333 !important;
+                color: #A0A0A0 !important;
+                border-radius: 6px !important;
+                font-weight: bold !important;
+                transition: all 0.3s ease !important;
+            }
+            div[data-testid="stButton"] > button[kind="secondary"]:hover {
+                border-color: #BF1A1A !important;
+                color: #BF1A1A !important; /* Turns red on hover */
+                background-color: #1A1A1A !important;
+                box-shadow: 0 4px 10px rgba(191, 26, 26, 0.2) !important;
+            }
+
+            /* --- 5. EXPANDERS (Investor Profile Dropdown) --- */
+            [data-testid="stExpander"] details {
+                border: 1px solid #333333 !important;
+                border-radius: 8px !important;
+                background-color: #0D101A !important;
+            }
+            [data-testid="stExpander"] summary {
+                background-color: #262730 !important;
+                color: #FFFFFF !important;
+                border-radius: 8px !important;
+                font-weight: bold !important;
+            }
+            [data-testid="stExpander"] summary:hover {
+                color: #BF1A1A !important;
+            }
+            [data-testid="stExpander"] summary svg {
+                fill: #BF1A1A !important; /* Makes the little dropdown arrow red */
+            }
+            [data-testid="stExpander"] div[role="region"] {
+                background-color: #0D101A !important;
+                padding: 15px !important;
+            }
+
+            /* --- 6. INPUT FIELDS & SLIDERS --- */
+            .stTextInput>div>div>input, .stSelectbox>div>div>select, .stTextArea>div>div>textarea {
+                background-color: #0D101A !important;
+                color: #FFFFFF !important;
+                border: 1px solid #333333 !important;
+                border-radius: 6px !important;
+            }
+            .stTextInput>div>div>input:focus, .stSelectbox>div>div>select:focus, .stTextArea>div>div>textarea:focus {
+                border-color: #BF1A1A !important;
+                box-shadow: 0 0 0 1px #BF1A1A !important;
+            }
+            /* Slider Track Color */
+            .stSlider > div > div > div > div {
+                background-color: #BF1A1A !important; 
+            }
+
+            /* --- 7. SIDEBAR NAVIGATION BARS --- */
             [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label > div:first-child {
                 display: none !important;
             }
-            
-            /* Style the background bars */
             [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label {
-                background-color: #1A1A1A !important; /* Sleek Black */
+                background-color: #1A1A1A !important;
                 padding: 12px 15px !important;
                 border-radius: 6px !important;
                 margin-bottom: 8px !important;
@@ -71,23 +141,17 @@ def main():
                 transition: all 0.3s ease !important;
                 border: 1px solid #333333 !important;
             }
-            
-            /* FIX: Brute-force the text inside the bars to be bright white */
             [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label p, 
             [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label span {
                 color: #FFFFFF !important;
                 font-weight: 600 !important;
             }
-            
-            /* Hover State -> Turns Verdix Red with a slight shadow */
             [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label:hover {
                 background-color: #BF1A1A !important;
                 border-color: #BF1A1A !important;
-                transform: translateX(4px); /* Slight slide to the right */
+                transform: translateX(4px);
                 box-shadow: 0 4px 10px rgba(191, 26, 26, 0.3) !important;
             }
-            
-            /* Active/Selected State -> Stays Verdix Red with stronger shadow */
             [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
                 background-color: #BF1A1A !important;
                 border-color: #BF1A1A !important;
@@ -126,7 +190,7 @@ def main():
         
         # --- HERO SECTION ---
         st.markdown("<h1 style='text-align: center;'>🚀 Startup Registration</h1>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; color: #555555; font-size: 1.1rem;'>Build a compelling, investor-ready profile to unlock access to the pitching platform. Share your vision, traction, team, and growth strategy in a format designed to match VC expectations.</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #A0A0A0; font-size: 1.1rem;'>Build a compelling, investor-ready profile to unlock access to the pitching platform. Share your vision, traction, team, and growth strategy in a format designed to match VC expectations.</p>", unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
         
         from datetime import datetime
@@ -139,7 +203,6 @@ def main():
             # --- THE LIVE TICKING DIGITAL CLOCK (JS INJECTION) ---
             import streamlit.components.v1 as components
             
-            # Note: Changed #FEC30D to #BF1A1A for brand alignment!
             live_clock_html = """
             <!DOCTYPE html>
             <html>
@@ -147,10 +210,10 @@ def main():
             <style>
                 body { margin: 0; font-family: sans-serif; background-color: transparent; display: flex; justify-content: center; }
                 .container { display: flex; justify-content: center; gap: 15px; margin-top: 10px; margin-bottom: 20px;}
-                .block { background-color: #262730; padding: 15px 25px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                .block { background-color: #1A1A1A; padding: 15px 25px; border-radius: 8px; text-align: center; border: 1px solid #333; box-shadow: 0 4px 6px rgba(0,0,0,0.4); }
                 .num { font-size: 2.5rem; font-family: 'Courier New', monospace; font-weight: bold; color: #BF1A1A; line-height: 1; }
-                .label { font-size: 0.75rem; color: #E0E0E0; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
-                .colon { font-size: 2.5rem; font-weight: bold; color: #262730; display: flex; align-items: center; padding-bottom: 15px; }
+                .label { font-size: 0.75rem; color: #A0A0A0; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+                .colon { font-size: 2.5rem; font-weight: bold; color: #333333; display: flex; align-items: center; padding-bottom: 15px; }
             </style>
             </head>
             <body>
@@ -244,7 +307,7 @@ def main():
 
             # --- CARD 1: TEAM DETAILS ---
             with st.container(border=True):
-                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Team & Academic Details</div>", unsafe_allow_html=True)
+                st.markdown("<div style='background-color: #0D101A; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px; border-bottom: 2px solid #BF1A1A;'>Team & Academic Details</div>", unsafe_allow_html=True)
                 
                 col1, col2 = st.columns(2)
                 with col1:
@@ -259,7 +322,7 @@ def main():
 
             # --- CARD 2: VENTURE PROFILE ---
             with st.container(border=True):
-                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Venture Profile</div>", unsafe_allow_html=True)
+                st.markdown("<div style='background-color: #0D101A; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px; border-bottom: 2px solid #BF1A1A;'>Venture Profile</div>", unsafe_allow_html=True)
                 
                 selected_industries = st.multiselect("Industry / Tags (Select up to 3) *", list(industry_dict.keys()))
                 if selected_industries:
@@ -280,7 +343,7 @@ def main():
             
             # --- CARD 3: MEDIA & LINKS ---
             with st.container(border=True):
-                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Media & Links</div>", unsafe_allow_html=True)
+                st.markdown("<div style='background-color: #0D101A; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px; border-bottom: 2px solid #BF1A1A;'>Media & Links</div>", unsafe_allow_html=True)
                 
                 st.info("💡 **Security Check:** Please ensure all Google Drive or Canva links are set to 'Anyone with the link can view' before submitting.")
                 
@@ -350,7 +413,7 @@ def main():
         
         # --- HERO SECTION ---
         st.markdown("<h1 style='text-align: center;'>⚖️ Judge Portal</h1>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; color: #555555; font-size: 1.1rem;'>Review startup profiles and submit your official evaluations.</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #A0A0A0; font-size: 1.1rem;'>Review startup profiles and submit your official evaluations.</p>", unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
         
         # --- SESSION STATE (Memory) ---
@@ -362,7 +425,7 @@ def main():
         # --- LOGIN SCREEN ---
         if not st.session_state.judge_logged_in:
             with st.container(border=True):
-                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>🔐 Secure Login</div>", unsafe_allow_html=True)
+                st.markdown("<div style='background-color: #0D101A; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px; border-bottom: 2px solid #BF1A1A;'>🔐 Secure Login</div>", unsafe_allow_html=True)
                 
                 judge_name_input = st.text_input("👨‍⚖️ Enter Your Full Name")
                 judge_pass_input = st.text_input("🔑 Event Access Code", type="password", help="Enter the shared event password provided by the organizers.")
@@ -400,7 +463,7 @@ def main():
             
             # --- CARD 1: TEAM SELECTION ---
             with st.container(border=True):
-                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Startup Selection</div>", unsafe_allow_html=True)
+                st.markdown("<div style='background-color: #0D101A; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px; border-bottom: 2px solid #BF1A1A;'>Startup Selection</div>", unsafe_allow_html=True)
                 
                 selected_track = st.selectbox("📌 Select Track", tracks)
                 
@@ -449,7 +512,7 @@ def main():
             if 'track_teams' in locals() and not track_teams.empty:
                 st.markdown("<br>", unsafe_allow_html=True)
                 with st.container(border=True):
-                    st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Evaluation Rubric</div>", unsafe_allow_html=True)
+                    st.markdown("<div style='background-color: #0D101A; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px; border-bottom: 2px solid #BF1A1A;'>Evaluation Rubric</div>", unsafe_allow_html=True)
                     
                     from datetime import datetime
                     with st.form("scoring_form"):
@@ -495,7 +558,7 @@ def main():
         
         # --- HERO SECTION ---
         st.markdown("<h1 style='text-align: center;'>🏆 Live Leaderboard</h1>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; color: #555555; font-size: 1.1rem;'>Official startup rankings and aggregated judging scores.</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #A0A0A0; font-size: 1.1rem;'>Official startup rankings and aggregated judging scores.</p>", unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
 
         # --- SESSION STATE (Memory) ---
@@ -505,7 +568,7 @@ def main():
         # --- ADMIN LOGIN SCREEN ---
         if not st.session_state.admin_logged_in:
             with st.container(border=True):
-                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>🔒 Admin Access Required</div>", unsafe_allow_html=True)
+                st.markdown("<div style='background-color: #0D101A; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px; border-bottom: 2px solid #BF1A1A;'>🔒 Admin Access Required</div>", unsafe_allow_html=True)
                 
                 admin_pass_input = st.text_input("🔑 Organizer Password", type="password", help="Enter the master password to view live scores.")
                 
@@ -579,7 +642,7 @@ def main():
                 tracks = ["All Tracks"] + [str(row["Track Name"]) for row in config_data if row.get("Track Name")]
 
                 with st.container(border=True):
-                    st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Filter Results</div>", unsafe_allow_html=True)
+                    st.markdown("<div style='background-color: #0D101A; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px; border-bottom: 2px solid #BF1A1A;'>Filter Results</div>", unsafe_allow_html=True)
                     selected_view = st.selectbox("🏆 View Leaderboard For:", tracks)
 
                 # Step 3: Aggregate Scores (Average the Total Score if multiple judges scored)
