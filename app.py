@@ -31,7 +31,7 @@ def main():
     # Removed the scale icon from the browser tab
     st.set_page_config(page_title="Verdix", layout="centered")
     
-    # --- UX & VERDIX CUSTOM BRANDING ---
+   # --- UX & VERDIX CUSTOM BRANDING ---
     hide_st_style = """
             <style>
             #MainMenu {visibility: hidden;}
@@ -42,16 +42,17 @@ def main():
             .stButton > button[kind="primary"] {
                 background-color: #BF1A1A !important;
                 border: 2px solid #BF1A1A !important;
-                color: white !important;
+                color: #FFFFFF !important;
                 border-radius: 6px !important;
                 font-weight: bold !important;
                 transition: all 0.3s ease !important;
             }
             .stButton > button[kind="primary"]:hover {
-                background-color: #000000 !important; /* Turns black on hover */
-                color: #BF1A1A !important; /* Text turns red */
+                background-color: #0A0A0A !important; /* Turns deep black on hover */
+                color: #FFFFFF !important; /* FIX: Text stays bright white for readability */
                 border: 2px solid #BF1A1A !important;
                 transform: scale(1.02);
+                box-shadow: 0 4px 15px rgba(191, 26, 26, 0.6) !important; /* FIX: Added Verdix red glow shadow for depth */
             }
 
             /* --- 2. SIDEBAR NAVIGATION BARS --- */
@@ -71,24 +72,26 @@ def main():
                 border: 1px solid #333333 !important;
             }
             
-            /* FIX: Force the text inside the bars to be bright white */
-            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label p {
+            /* FIX: Brute-force the text inside the bars to be bright white */
+            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label p, 
+            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label span {
                 color: #FFFFFF !important;
                 font-weight: 600 !important;
             }
             
-            /* Hover State -> Turns Verdix Red */
+            /* Hover State -> Turns Verdix Red with a slight shadow */
             [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label:hover {
                 background-color: #BF1A1A !important;
                 border-color: #BF1A1A !important;
                 transform: translateX(4px); /* Slight slide to the right */
+                box-shadow: 0 4px 10px rgba(191, 26, 26, 0.3) !important;
             }
             
-            /* Active/Selected State -> Stays Verdix Red */
+            /* Active/Selected State -> Stays Verdix Red with stronger shadow */
             [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
                 background-color: #BF1A1A !important;
                 border-color: #BF1A1A !important;
-                box-shadow: 0 4px 10px rgba(191, 26, 26, 0.4);
+                box-shadow: 0 4px 12px rgba(191, 26, 26, 0.6) !important;
             }
             </style>
             """
