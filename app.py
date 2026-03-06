@@ -63,7 +63,7 @@ def main():
     # Sidebar Navigation
     menu = st.sidebar.radio("Navigation", ["Student Registration", "Judge Portal", "Leaderboard"])
 
-  # ---------------------------
+    # ---------------------------
     # MODE 1: STUDENT REGISTRATION
     # ---------------------------
     if menu == "Student Registration":
@@ -287,7 +287,7 @@ def main():
                         st.success(f"✅ {team_name} successfully registered.")
                         st.info("Your investor profile has been securely logged. The judging panel will review your materials shortly.")
 
-   # ---------------------------
+    # ---------------------------
     # MODE 2: JUDGE PORTAL
     # ---------------------------
     elif menu == "Judge Portal":
@@ -432,7 +432,7 @@ def main():
                             ])
                             st.success(f"🎉 Evaluation securely logged for {selected_team}! You may now select another startup.")
 
-  # ---------------------------
+    # ---------------------------
     # MODE 3: LEADERBOARD
     # ---------------------------
     elif menu == "Leaderboard":
@@ -590,3 +590,8 @@ def main():
                                     st.error("⚠️ Database header mismatch. Please check Row 1 of your Scores Google Sheet.")
                 else:
                     st.error("⚠️ Column 'Team Name' is missing from your Scores sheet. Please fix Row 1 in Google Sheets.")
+
+# --- THE ENGINE STARTER ---
+# This block is absolutely critical to make the app run!
+if __name__ == "__main__":
+    main()
