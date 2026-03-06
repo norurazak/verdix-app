@@ -59,21 +59,18 @@ def main():
                 color: #BF1A1A !important; /* Text turns red on hover */
             }
 
-            /* --- 2. SECONDARY BUTTONS (Log Out, Submit Score) --- */
-            .stButton > button[kind="secondary"],
-            .stFormSubmitButton > button[kind="secondary"] {
+            /* --- 2. SECONDARY BUTTONS (Log Out) --- */
+            .stButton > button[kind="secondary"] {
                 background-color: #1A1A1A !important;
                 border: 1px solid #BF1A1A !important;
                 border-radius: 6px !important;
                 transition: all 0.3s ease !important;
             }
-            .stButton > button[kind="secondary"] *,
-            .stFormSubmitButton > button[kind="secondary"] * {
+            .stButton > button[kind="secondary"] * {
                 color: #FFFFFF !important;
                 font-weight: bold !important;
             }
-            .stButton > button[kind="secondary"]:hover,
-            .stFormSubmitButton > button[kind="secondary"]:hover {
+            .stButton > button[kind="secondary"]:hover {
                 background-color: #BF1A1A !important;
                 border: 1px solid #BF1A1A !important;
                 box-shadow: 0 4px 10px rgba(191, 26, 26, 0.3) !important;
@@ -294,7 +291,6 @@ def main():
             
             _, center_col, _ = st.columns([1, 2, 1])
             with center_col:
-                # Kept as Primary for the Student Form
                 submitted = st.button("Submit Registration", type="primary", use_container_width=True)
             
             if submitted:
@@ -450,9 +446,7 @@ def main():
                         comments = st.text_area("Feedback / Comments (Optional)", placeholder="What did they do well? What critical areas need improvement?")
                         
                         st.markdown("<br>", unsafe_allow_html=True)
-                        
-                        # --- CHANGED TO type="secondary" TO MATCH LOG OUT BUTTON ---
-                        submit_score = st.form_submit_button("Submit Final Score", type="secondary", use_container_width=True)
+                        submit_score = st.form_submit_button("Submit Final Score", type="primary", use_container_width=True)
                         
                         if submit_score:
                             timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
