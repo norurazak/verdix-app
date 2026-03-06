@@ -37,54 +37,65 @@ def main():
             footer {visibility: hidden;}
             header {visibility: hidden;}
 
-            /* --- 1. PRIMARY SUBMIT BUTTONS --- */
-            .stButton > button[kind="primary"] {
+            /* --- 1. ALL PRIMARY BUTTONS (Normal & Form Submit) --- */
+            button[kind="primary"] {
                 background-color: #BF1A1A !important;
                 border: 2px solid #BF1A1A !important;
                 border-radius: 6px !important;
                 transition: all 0.3s ease !important;
             }
-            /* BRUTE-FORCE TEXT TO WHITE */
-            .stButton > button[kind="primary"] * {
+            /* Ruthlessly force text to white inside primary buttons */
+            button[kind="primary"] p, 
+            button[kind="primary"] span, 
+            button[kind="primary"] div {
                 color: #FFFFFF !important; 
                 font-weight: bold !important;
             }
-            .stButton > button[kind="primary"]:hover {
+            /* Primary Hover State */
+            button[kind="primary"]:hover {
                 background-color: #000000 !important; 
                 border: 2px solid #BF1A1A !important;
-                transform: scale(1.02);
-                box-shadow: 0 4px 15px rgba(191, 26, 26, 0.4) !important;
             }
-            .stButton > button[kind="primary"]:hover * {
+            button[kind="primary"]:hover p, 
+            button[kind="primary"]:hover span, 
+            button[kind="primary"]:hover div {
                 color: #BF1A1A !important; /* Text turns red on hover */
             }
 
-            /* --- 2. SECONDARY BUTTONS (Log Out, Submit Score) --- */
-            .stButton > button[kind="secondary"],
-            .stFormSubmitButton > button[kind="secondary"] {
+            /* --- 2. ALL SECONDARY BUTTONS (Log Out, Submit Score) --- */
+            button[kind="secondary"] {
                 background-color: #1A1A1A !important;
                 border: 1px solid #BF1A1A !important;
                 border-radius: 6px !important;
                 transition: all 0.3s ease !important;
             }
-            .stButton > button[kind="secondary"] *,
-            .stFormSubmitButton > button[kind="secondary"] * {
+            /* Ruthlessly force text to white inside secondary buttons */
+            button[kind="secondary"] p, 
+            button[kind="secondary"] span, 
+            button[kind="secondary"] div {
                 color: #FFFFFF !important;
                 font-weight: bold !important;
             }
-            .stButton > button[kind="secondary"]:hover,
-            .stFormSubmitButton > button[kind="secondary"]:hover {
+            /* Secondary Hover State */
+            button[kind="secondary"]:hover {
                 background-color: #BF1A1A !important;
                 border: 1px solid #BF1A1A !important;
-                box-shadow: 0 4px 10px rgba(191, 26, 26, 0.3) !important;
+                box-shadow: 0 4px 10px rgba(191, 26, 26, 0.4) !important;
+            }
+            button[kind="secondary"]:hover p, 
+            button[kind="secondary"]:hover span, 
+            button[kind="secondary"]:hover div {
+                color: #FFFFFF !important; /* Keep text white on hover */
             }
 
             /* --- 3. SIDEBAR NAVIGATION BARS --- */
-            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label > div:first-child {
+            /* Hide the default radio button circles */
+            [data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {
                 display: none !important;
             }
             
-            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label {
+            /* Style the background bars */
+            [data-testid="stSidebar"] div[role="radiogroup"] label {
                 background-color: #1A1A1A !important; 
                 padding: 12px 15px !important;
                 border-radius: 6px !important;
@@ -94,20 +105,22 @@ def main():
                 border: 1px solid #333333 !important;
             }
             
-            /* BRUTE-FORCE SIDEBAR TEXT TO WHITE */
-            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label * {
+            /* Force Sidebar Text to White */
+            [data-testid="stSidebar"] div[role="radiogroup"] label p,
+            [data-testid="stSidebar"] div[role="radiogroup"] label span {
                 color: #FFFFFF !important;
                 font-weight: 600 !important;
             }
             
-            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label:hover {
+            /* Sidebar Hover */
+            [data-testid="stSidebar"] div[role="radiogroup"] label:hover {
                 background-color: #BF1A1A !important;
                 border-color: #BF1A1A !important;
                 transform: translateX(4px); 
-                box-shadow: 0 4px 10px rgba(191, 26, 26, 0.3) !important;
             }
             
-            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
+            /* Sidebar Active Selected State */
+            [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
                 background-color: #BF1A1A !important;
                 border-color: #BF1A1A !important;
                 box-shadow: 0 4px 10px rgba(191, 26, 26, 0.4) !important;
