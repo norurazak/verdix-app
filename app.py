@@ -31,12 +31,60 @@ def main():
     # Removed the scale icon from the browser tab
     st.set_page_config(page_title="Verdix", layout="centered")
     
-    # --- UX HIDE STREAMLIT BRANDING ---
+    # --- UX & VERDIX CUSTOM BRANDING ---
     hide_st_style = """
             <style>
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             header {visibility: hidden;}
+
+            /* --- 1. PRIMARY SUBMIT BUTTONS --- */
+            .stButton > button[kind="primary"] {
+                background-color: #BF1A1A !important;
+                border: 2px solid #BF1A1A !important;
+                color: white !important;
+                border-radius: 6px !important;
+                font-weight: bold !important;
+                transition: all 0.3s ease !important;
+            }
+            .stButton > button[kind="primary"]:hover {
+                background-color: #000000 !important; /* Turns black on hover */
+                color: #BF1A1A !important; /* Text turns red */
+                border: 2px solid #BF1A1A !important;
+                transform: scale(1.02);
+            }
+
+            /* --- 2. SIDEBAR NAVIGATION BARS --- */
+            /* Hide the default radio button circles */
+            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label > div:first-child {
+                display: none !important;
+            }
+            
+            /* Style the background bars */
+            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label {
+                background-color: #1A1A1A !important; /* Sleek Black */
+                color: #FFFFFF !important;
+                padding: 12px 15px !important;
+                border-radius: 6px !important;
+                margin-bottom: 8px !important;
+                cursor: pointer !important;
+                transition: all 0.3s ease !important;
+                border: 1px solid #333333 !important;
+            }
+            
+            /* Hover State -> Turns Verdix Red */
+            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label:hover {
+                background-color: #BF1A1A !important;
+                border-color: #BF1A1A !important;
+                transform: translateX(4px); /* Slight slide to the right */
+            }
+            
+            /* Active/Selected State -> Stays Verdix Red */
+            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
+                background-color: #BF1A1A !important;
+                border-color: #BF1A1A !important;
+                box-shadow: 0 4px 10px rgba(191, 26, 26, 0.4);
+            }
             </style>
             """
     st.markdown(hide_st_style, unsafe_allow_html=True)
@@ -83,7 +131,7 @@ def main():
             # --- THE LIVE TICKING DIGITAL CLOCK (JS INJECTION) ---
             import streamlit.components.v1 as components
             
-            # We use pure HTML/JS so it ticks in the browser without erasing Streamlit form data
+            # Note: Changed #FEC30D to #BF1A1A for brand alignment!
             live_clock_html = """
             <!DOCTYPE html>
             <html>
@@ -92,7 +140,7 @@ def main():
                 body { margin: 0; font-family: sans-serif; background-color: transparent; display: flex; justify-content: center; }
                 .container { display: flex; justify-content: center; gap: 15px; margin-top: 10px; margin-bottom: 20px;}
                 .block { background-color: #262730; padding: 15px 25px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-                .num { font-size: 2.5rem; font-family: 'Courier New', monospace; font-weight: bold; color: #FEC30D; line-height: 1; }
+                .num { font-size: 2.5rem; font-family: 'Courier New', monospace; font-weight: bold; color: #BF1A1A; line-height: 1; }
                 .label { font-size: 0.75rem; color: #E0E0E0; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
                 .colon { font-size: 2.5rem; font-weight: bold; color: #262730; display: flex; align-items: center; padding-bottom: 15px; }
             </style>
@@ -556,8 +604,9 @@ def main():
 
                         st.markdown("<br>", unsafe_allow_html=True)
                         with st.container(border=True):
-                            # iLabs Gold Banner for the Winners Podium
-                            st.markdown(f"<div style='background-color: #FEC30D; color: #31333F; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 15px;'>Top Rankings: {selected_view}</div>", unsafe_allow_html=True)
+                            
+                            # Note: Changed to match Verdix Red branding
+                            st.markdown(f"<div style='background-color: #BF1A1A; color: #FFFFFF; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 15px;'>Top Rankings: {selected_view}</div>", unsafe_allow_html=True)
 
                             # Highlight Top 3 Podium
                             if len(leaderboard) >= 1:
