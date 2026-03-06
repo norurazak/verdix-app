@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-from datetime import datetime
+from datetime import datetime # <-- This global import is all we need!
 
 # --- CONFIGURATION ---
 SCOPE = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
@@ -163,7 +163,7 @@ def main():
         st.markdown("<p style='text-align: center; color: #555555; font-size: 1.1rem;'>Build a compelling, investor-ready profile to unlock access to the pitching platform.</p>", unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
         
-        from datetime import datetime
+        # NOTE: Removed the redundant local import of datetime here!
         deadline = datetime(2026, 3, 15, 23, 59) 
         now = datetime.now()
         
@@ -307,7 +307,6 @@ def main():
             
             _, center_col, _ = st.columns([1, 2, 1])
             with center_col:
-                # Kept as Primary for the Student Form
                 submitted = st.button("Submit Registration", type="primary", use_container_width=True)
             
             if submitted:
@@ -463,8 +462,6 @@ def main():
                         comments = st.text_area("Feedback / Comments (Optional)", placeholder="What did they do well? What critical areas need improvement?")
                         
                         st.markdown("<br>", unsafe_allow_html=True)
-                        
-                        # --- CHANGED TO type="secondary" TO MATCH LOG OUT BUTTON ---
                         submit_score = st.form_submit_button("Submit Final Score", type="secondary", use_container_width=True)
                         
                         if submit_score:
