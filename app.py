@@ -432,54 +432,142 @@ def main():
                             ])
                             st.success(f"🎉 Evaluation securely logged for {selected_team}! You may now select another startup.")
 
-   # ---------------------------
+  # ---------------------------
     # MODE 3: LEADERBOARD
     # ---------------------------
     elif menu == "Leaderboard":
-        st.header("🏆 Live Results")
-        password = st.text_input("Admin Password", type="password")
         
-        if password == "admin123":
-            scores_data = ws_scores.get_all_records()
-            df_scores = pd.DataFrame(scores_data)
-            
-            if not df_scores.empty:
-                # Calculate Total Raw Score (Sum of cols D-J)
-                numeric_cols = ['Problem Sol-Fit', 'Competitor Market', 'GTM Strategy', 
-                                'Innovation', 'Prototype', 'Revenue Model', 'Story Telling']
-                
-                # --- FIX: FORCE CONVERT TEXT TO NUMBERS ---
-                for col in numeric_cols:
-                    # Coerce errors will turn non-numbers into 0
-                    df_scores[col] = pd.to_numeric(df_scores[col], errors='coerce').fillna(0)
-                # ------------------------------------------
+        # --- HERO SECTION ---
+        st.markdown("<h1 style='text-align: center;'>🏆 Live Leaderboard</h1>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #555555; font-size: 1.1rem;'>Official startup rankings and aggregated judging scores.</p>", unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
 
-                # Create a Total column
-                df_scores['Total Raw'] = df_scores[numeric_cols].sum(axis=1)
+        # --- SESSION STATE (Memory) ---
+        if "admin_logged_in" not in st.session_state:
+            st.session_state.admin_logged_in = False
+
+        # --- ADMIN LOGIN SCREEN ---
+        if not st.session_state.admin_logged_in:
+            with st.container(border=True):
+                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>🔒 Admin Access Required</div>", unsafe_allow_html=True)
                 
-                # Group by Team to get average across judges
-                leaderboard = df_scores.groupby('Team Name')[['Total Raw']].mean().reset_index()
-                leaderboard = leaderboard.sort_values(by='Total Raw', ascending=False)
+                admin_pass_input = st.text_input("🔑 Organizer Password", type="password", help="Enter the master password to view live scores.")
                 
-                # --- UPGRADE 1: DASHBOARD METRICS ---
-                st.markdown("### 🌟 Current Standings")
-                top_team = leaderboard.iloc[0]
-                
-                col1, col2, col3 = st.columns(3)
-                col1.metric(label="🥇 1st Place", value=top_team['Team Name'])
-                col2.metric(label="Highest Score", value=f"{top_team['Total Raw']:.2f} pts")
-                col3.metric(label="Total Teams Judged", value=len(leaderboard))
-                
-                st.divider()
-                
-                # --- COLORFUL BAR CHART & HIDDEN TABLE ---
-                st.bar_chart(leaderboard.set_index('Team Name')['Total Raw'], color="#FEC30D")
-                
-                with st.expander("📄 View Detailed Score Table"):
-                    st.dataframe(leaderboard, hide_index=True, use_container_width=True)
-            
+                st.markdown("<br>", unsafe_allow_html=True)
+                _, center_col, _ = st.columns([1, 2, 1])
+                with center_col:
+                    if st.button("Unlock Leaderboard", type="primary", use_container_width=True):
+                        if admin_pass_input == "admin2026": # <--- CHANGE ADMIN PASSWORD HERE
+                            st.session_state.admin_logged_in = True
+                            st.rerun()
+                        else:
+                            st.error("❌ Incorrect Password.")
+                            
+        # --- THE SECURE LEADERBOARD PORTAL ---
+        else:
+            # Header with Logout
+            col_title, col_logout = st.columns([3, 1])
+            with col_title:
+                st.success("✅ Secure Admin Session Active")
+            with col_logout:
+                if st.button("🔒 Lock Dashboard", use_container_width=True):
+                    st.session_state.admin_logged_in = False
+                    st.rerun()
+
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            # Fetch Data from both sheets
+            scores_data = ws_scores.get_all_records()
+            teams_data = ws_teams.get_all_records()
+
+            if not scores_data:
+                st.info("📊 No scores have been submitted yet. Waiting for judges...")
             else:
-                st.info("Waiting for the first scores to come in...")
+                import pandas as pd
+                df_scores = pd.DataFrame(scores_data)
+                df_teams = pd.DataFrame(teams_data)
+
+                # Step 1: Create a map to link Teams to their Tracks
+                track_dict = {}
+                if not df_teams.empty and 'Team Name' in df_teams.columns and 'Track' in df_teams.columns:
+                    # If a team updated their form, keep the newest track info
+                    track_dict = df_teams.drop_duplicates(subset=['Team Name'], keep='last').set_index('Team Name')['Track'].to_dict()
+
+                # Step 2: Clean and Calculate the Scores
+                score_cols = [
+                    '1. Problem-Solution Fit', '2. Competitor & Market Analysis',
+                    '3. Go-to-Market (GTM) Strategy', '4. Innovation / Differentiation',
+                    '5. Prototype / MVP Readiness', '6. Revenue Model / Financials',
+                    '7. Storytelling & Pitch Delivery'
+                ]
+
+                # Convert all scores to numbers (just in case) and sum them up out of 70
+                for col in score_cols:
+                    if col in df_scores.columns:
+                        df_scores[col] = pd.to_numeric(df_scores[col], errors='coerce').fillna(0)
+                
+                available_score_cols = [col for col in score_cols if col in df_scores.columns]
+                df_scores['Total Score'] = df_scores[available_score_cols].sum(axis=1)
+
+                # Attach the track to each score
+                df_scores['Track'] = df_scores['Team Name'].map(track_dict).fillna("Unknown Track")
+
+                # --- UI: FILTER BY TRACK ---
+                config_data = ws_config.get_all_records()
+                tracks = ["All Tracks"] + [str(row["Track Name"]) for row in config_data if row.get("Track Name")]
+
+                with st.container(border=True):
+                    st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Filter Results</div>", unsafe_allow_html=True)
+                    selected_view = st.selectbox("🏆 View Leaderboard For:", tracks)
+
+                # Step 3: Aggregate Scores (Average the Total Score if multiple judges scored)
+                leaderboard = df_scores.groupby(['Team Name', 'Track']).agg(
+                    Average_Score=('Total Score', 'mean'),
+                    Judges_Count=('Judge Name', 'nunique')
+                ).reset_index()
+
+                leaderboard['Average_Score'] = leaderboard['Average_Score'].round(2)
+
+                # Apply the user's filter
+                if selected_view != "All Tracks":
+                    leaderboard = leaderboard[leaderboard['Track'] == selected_view]
+
+                # Sort Highest to Lowest
+                leaderboard = leaderboard.sort_values(by='Average_Score', ascending=False).reset_index(drop=True)
+
+                # --- UI: DISPLAY RESULTS ---
+                if leaderboard.empty:
+                    st.warning(f"No scores available for {selected_view} yet.")
+                else:
+                    # Format for Streamlit table
+                    leaderboard.index = leaderboard.index + 1 # Start rank at 1, not 0
+                    leaderboard = leaderboard.rename(columns={
+                        'Team Name': 'Startup / Team',
+                        'Average_Score': 'Avg. Score (Out of 70)',
+                        'Judges_Count': '# of Judges'
+                    })
+
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    with st.container(border=True):
+                        # iLabs Gold Banner for the Winners Podium
+                        st.markdown(f"<div style='background-color: #FEC30D; color: #31333F; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 15px;'>Top Rankings: {selected_view}</div>", unsafe_allow_html=True)
+
+                        # Highlight Top 3 Podium
+                        if len(leaderboard) >= 1:
+                            st.success(f"🥇 **1st Place:** {leaderboard.iloc[0]['Startup / Team']} — **{leaderboard.iloc[0]['Avg. Score (Out of 70)']} pts**")
+                        if len(leaderboard) >= 2:
+                            st.info(f"🥈 **2nd Place:** {leaderboard.iloc[1]['Startup / Team']} — **{leaderboard.iloc[1]['Avg. Score (Out of 70)']} pts**")
+                        if len(leaderboard) >= 3:
+                            st.warning(f"🥉 **3rd Place:** {leaderboard.iloc[2]['Startup / Team']} — **{leaderboard.iloc[2]['Avg. Score (Out of 70)']} pts**")
+
+                        st.markdown("<br>", unsafe_allow_html=True)
+                        st.dataframe(leaderboard, use_container_width=True)
+
+                        # Detailed Judge Breakdown
+                        with st.expander("🔍 View Detailed Feedback & Individual Scores"):
+                            st.markdown("Use this raw data to see exactly who scored what, and read the judges' individual feedback.")
+                            raw_display = df_scores[['Timestamp', 'Judge Name', 'Team Name', 'Track', 'Total Score', 'Feedback / Comments']].sort_values(by='Timestamp', ascending=False)
+                            st.dataframe(raw_display, use_container_width=True)
 
 if __name__ == "__main__":
     main()
