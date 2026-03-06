@@ -63,13 +63,18 @@ def main():
             /* Style the background bars */
             [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label {
                 background-color: #1A1A1A !important; /* Sleek Black */
-                color: #FFFFFF !important;
                 padding: 12px 15px !important;
                 border-radius: 6px !important;
                 margin-bottom: 8px !important;
                 cursor: pointer !important;
                 transition: all 0.3s ease !important;
                 border: 1px solid #333333 !important;
+            }
+            
+            /* FIX: Force the text inside the bars to be bright white */
+            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label p {
+                color: #FFFFFF !important;
+                font-weight: 600 !important;
             }
             
             /* Hover State -> Turns Verdix Red */
