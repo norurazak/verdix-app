@@ -509,8 +509,14 @@ def main():
                 available_score_cols = [col for col in score_cols if col in df_scores.columns]
                 df_scores['Total Score'] = df_scores[available_score_cols].sum(axis=1)
 
-                # Attach the track to each score
-                df_scores['Track'] = df_scores['Team Name'].map(track_dict).fillna("Unknown Track")
+                # Attach the track to each score safely
+                if not track_dict:
+                    df_scores['Track'] = "Unknown Track"
+                else:
+                    if 'Team Name' in df_scores.columns:
+                        df_scores['Track'] = df_scores['Team Name'].map(track_dict).fillna("Unknown Track")
+                    else:
+                        df_scores['Track'] = "Unknown Track"
 
                 # --- UI: FILTER BY TRACK ---
                 config_data = ws_config.get_all_records()
@@ -521,53 +527,66 @@ def main():
                     selected_view = st.selectbox("🏆 View Leaderboard For:", tracks)
 
                 # Step 3: Aggregate Scores (Average the Total Score if multiple judges scored)
-                leaderboard = df_scores.groupby(['Team Name', 'Track']).agg(
-                    Average_Score=('Total Score', 'mean'),
-                    Judges_Count=('Judge Name', 'nunique')
-                ).reset_index()
+                if 'Team Name' in df_scores.columns:
+                    leaderboard = df_scores.groupby(['Team Name', 'Track']).agg(
+                        Average_Score=('Total Score', 'mean'),
+                        Judges_Count=('Judge Name', 'nunique') if 'Judge Name' in df_scores.columns else ('Total Score', 'count')
+                    ).reset_index()
 
-                leaderboard['Average_Score'] = leaderboard['Average_Score'].round(2)
+                    leaderboard['Average_Score'] = leaderboard['Average_Score'].round(2)
 
-                # Apply the user's filter
-                if selected_view != "All Tracks":
-                    leaderboard = leaderboard[leaderboard['Track'] == selected_view]
+                    # Apply the user's filter
+                    if selected_view != "All Tracks":
+                        leaderboard = leaderboard[leaderboard['Track'] == selected_view]
 
-                # Sort Highest to Lowest
-                leaderboard = leaderboard.sort_values(by='Average_Score', ascending=False).reset_index(drop=True)
+                    # Sort Highest to Lowest
+                    leaderboard = leaderboard.sort_values(by='Average_Score', ascending=False).reset_index(drop=True)
 
-                # --- UI: DISPLAY RESULTS ---
-                if leaderboard.empty:
-                    st.warning(f"No scores available for {selected_view} yet.")
-                else:
-                    # Format for Streamlit table
-                    leaderboard.index = leaderboard.index + 1 # Start rank at 1, not 0
-                    leaderboard = leaderboard.rename(columns={
-                        'Team Name': 'Startup / Team',
-                        'Average_Score': 'Avg. Score (Out of 70)',
-                        'Judges_Count': '# of Judges'
-                    })
-
-                    st.markdown("<br>", unsafe_allow_html=True)
-                    with st.container(border=True):
-                        # iLabs Gold Banner for the Winners Podium
-                        st.markdown(f"<div style='background-color: #FEC30D; color: #31333F; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 15px;'>Top Rankings: {selected_view}</div>", unsafe_allow_html=True)
-
-                        # Highlight Top 3 Podium
-                        if len(leaderboard) >= 1:
-                            st.success(f"🥇 **1st Place:** {leaderboard.iloc[0]['Startup / Team']} — **{leaderboard.iloc[0]['Avg. Score (Out of 70)']} pts**")
-                        if len(leaderboard) >= 2:
-                            st.info(f"🥈 **2nd Place:** {leaderboard.iloc[1]['Startup / Team']} — **{leaderboard.iloc[1]['Avg. Score (Out of 70)']} pts**")
-                        if len(leaderboard) >= 3:
-                            st.warning(f"🥉 **3rd Place:** {leaderboard.iloc[2]['Startup / Team']} — **{leaderboard.iloc[2]['Avg. Score (Out of 70)']} pts**")
+                    # --- UI: DISPLAY RESULTS ---
+                    if leaderboard.empty:
+                        st.warning(f"No scores available for {selected_view} yet.")
+                    else:
+                        # Format for Streamlit table
+                        leaderboard.index = leaderboard.index + 1 # Start rank at 1, not 0
+                        leaderboard = leaderboard.rename(columns={
+                            'Team Name': 'Startup / Team',
+                            'Average_Score': 'Avg. Score (Out of 70)',
+                            'Judges_Count': '# of Judges'
+                        })
 
                         st.markdown("<br>", unsafe_allow_html=True)
-                        st.dataframe(leaderboard, use_container_width=True)
+                        with st.container(border=True):
+                            # iLabs Gold Banner for the Winners Podium
+                            st.markdown(f"<div style='background-color: #FEC30D; color: #31333F; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 15px;'>Top Rankings: {selected_view}</div>", unsafe_allow_html=True)
 
-                        # Detailed Judge Breakdown
-                        with st.expander("🔍 View Detailed Feedback & Individual Scores"):
-                            st.markdown("Use this raw data to see exactly who scored what, and read the judges' individual feedback.")
-                            raw_display = df_scores[['Timestamp', 'Judge Name', 'Team Name', 'Track', 'Total Score', 'Feedback / Comments']].sort_values(by='Timestamp', ascending=False)
-                            st.dataframe(raw_display, use_container_width=True)
+                            # Highlight Top 3 Podium
+                            if len(leaderboard) >= 1:
+                                st.success(f"🥇 **1st Place:** {leaderboard.iloc[0]['Startup / Team']} — **{leaderboard.iloc[0]['Avg. Score (Out of 70)']} pts**")
+                            if len(leaderboard) >= 2:
+                                st.info(f"🥈 **2nd Place:** {leaderboard.iloc[1]['Startup / Team']} — **{leaderboard.iloc[1]['Avg. Score (Out of 70)']} pts**")
+                            if len(leaderboard) >= 3:
+                                st.warning(f"🥉 **3rd Place:** {leaderboard.iloc[2]['Startup / Team']} — **{leaderboard.iloc[2]['Avg. Score (Out of 70)']} pts**")
 
-if __name__ == "__main__":
-    main()
+                            st.markdown("<br>", unsafe_allow_html=True)
+                            st.dataframe(leaderboard, use_container_width=True)
+
+                            # Detailed Judge Breakdown
+                            with st.expander("🔍 View Detailed Feedback & Individual Scores"):
+                                st.markdown("Use this raw data to see exactly who scored what, and read the judges' individual feedback.")
+                                
+                                # SAFETY FIX: Only try to display columns that actually exist!
+                                desired_cols = ['Timestamp', 'Judge Name', 'Team Name', 'Track', 'Total Score', 'Feedback / Comments']
+                                safe_cols = [col for col in desired_cols if col in df_scores.columns]
+                                
+                                if safe_cols:
+                                    # Sort by Timestamp if it exists
+                                    if 'Timestamp' in safe_cols:
+                                        raw_display = df_scores[safe_cols].sort_values(by='Timestamp', ascending=False)
+                                    else:
+                                        raw_display = df_scores[safe_cols]
+                                    
+                                    st.dataframe(raw_display, use_container_width=True)
+                                else:
+                                    st.error("⚠️ Database header mismatch. Please check Row 1 of your Scores Google Sheet.")
+                else:
+                    st.error("⚠️ Column 'Team Name' is missing from your Scores sheet. Please fix Row 1 in Google Sheets.")
