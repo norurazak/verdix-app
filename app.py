@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-from datetime import datetime # <-- This global import is all we need!
+from datetime import datetime
 
 # --- CONFIGURATION ---
 SCOPE = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
@@ -37,65 +37,54 @@ def main():
             footer {visibility: hidden;}
             header {visibility: hidden;}
 
-            /* --- 1. ALL PRIMARY BUTTONS (Normal & Form Submit) --- */
-            button[kind="primary"] {
+            /* --- 1. PRIMARY SUBMIT BUTTONS --- */
+            .stButton > button[kind="primary"] {
                 background-color: #BF1A1A !important;
                 border: 2px solid #BF1A1A !important;
                 border-radius: 6px !important;
                 transition: all 0.3s ease !important;
             }
-            /* Ruthlessly force text to white inside primary buttons */
-            button[kind="primary"] p, 
-            button[kind="primary"] span, 
-            button[kind="primary"] div {
+            /* BRUTE-FORCE TEXT TO WHITE */
+            .stButton > button[kind="primary"] * {
                 color: #FFFFFF !important; 
                 font-weight: bold !important;
             }
-            /* Primary Hover State */
-            button[kind="primary"]:hover {
+            .stButton > button[kind="primary"]:hover {
                 background-color: #000000 !important; 
                 border: 2px solid #BF1A1A !important;
+                transform: scale(1.02);
+                box-shadow: 0 4px 15px rgba(191, 26, 26, 0.4) !important;
             }
-            button[kind="primary"]:hover p, 
-            button[kind="primary"]:hover span, 
-            button[kind="primary"]:hover div {
+            .stButton > button[kind="primary"]:hover * {
                 color: #BF1A1A !important; /* Text turns red on hover */
             }
 
-            /* --- 2. ALL SECONDARY BUTTONS (Log Out, Submit Score) --- */
-            button[kind="secondary"] {
+            /* --- 2. SECONDARY BUTTONS (Log Out, Submit Score) --- */
+            .stButton > button[kind="secondary"],
+            .stFormSubmitButton > button[kind="secondary"] {
                 background-color: #1A1A1A !important;
                 border: 1px solid #BF1A1A !important;
                 border-radius: 6px !important;
                 transition: all 0.3s ease !important;
             }
-            /* Ruthlessly force text to white inside secondary buttons */
-            button[kind="secondary"] p, 
-            button[kind="secondary"] span, 
-            button[kind="secondary"] div {
+            .stButton > button[kind="secondary"] *,
+            .stFormSubmitButton > button[kind="secondary"] * {
                 color: #FFFFFF !important;
                 font-weight: bold !important;
             }
-            /* Secondary Hover State */
-            button[kind="secondary"]:hover {
+            .stButton > button[kind="secondary"]:hover,
+            .stFormSubmitButton > button[kind="secondary"]:hover {
                 background-color: #BF1A1A !important;
                 border: 1px solid #BF1A1A !important;
-                box-shadow: 0 4px 10px rgba(191, 26, 26, 0.4) !important;
-            }
-            button[kind="secondary"]:hover p, 
-            button[kind="secondary"]:hover span, 
-            button[kind="secondary"]:hover div {
-                color: #FFFFFF !important; /* Keep text white on hover */
+                box-shadow: 0 4px 10px rgba(191, 26, 26, 0.3) !important;
             }
 
             /* --- 3. SIDEBAR NAVIGATION BARS --- */
-            /* Hide the default radio button circles */
-            [data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {
+            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label > div:first-child {
                 display: none !important;
             }
             
-            /* Style the background bars */
-            [data-testid="stSidebar"] div[role="radiogroup"] label {
+            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label {
                 background-color: #1A1A1A !important; 
                 padding: 12px 15px !important;
                 border-radius: 6px !important;
@@ -105,22 +94,20 @@ def main():
                 border: 1px solid #333333 !important;
             }
             
-            /* Force Sidebar Text to White */
-            [data-testid="stSidebar"] div[role="radiogroup"] label p,
-            [data-testid="stSidebar"] div[role="radiogroup"] label span {
+            /* BRUTE-FORCE SIDEBAR TEXT TO WHITE */
+            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label * {
                 color: #FFFFFF !important;
                 font-weight: 600 !important;
             }
             
-            /* Sidebar Hover */
-            [data-testid="stSidebar"] div[role="radiogroup"] label:hover {
+            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label:hover {
                 background-color: #BF1A1A !important;
                 border-color: #BF1A1A !important;
                 transform: translateX(4px); 
+                box-shadow: 0 4px 10px rgba(191, 26, 26, 0.3) !important;
             }
             
-            /* Sidebar Active Selected State */
-            [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
+            [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
                 background-color: #BF1A1A !important;
                 border-color: #BF1A1A !important;
                 box-shadow: 0 4px 10px rgba(191, 26, 26, 0.4) !important;
@@ -163,7 +150,7 @@ def main():
         st.markdown("<p style='text-align: center; color: #555555; font-size: 1.1rem;'>Build a compelling, investor-ready profile to unlock access to the pitching platform.</p>", unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # NOTE: Removed the redundant local import of datetime here!
+        from datetime import datetime
         deadline = datetime(2026, 3, 15, 23, 59) 
         now = datetime.now()
         
@@ -307,6 +294,7 @@ def main():
             
             _, center_col, _ = st.columns([1, 2, 1])
             with center_col:
+                # Kept as Primary for the Student Form
                 submitted = st.button("Submit Registration", type="primary", use_container_width=True)
             
             if submitted:
@@ -462,6 +450,8 @@ def main():
                         comments = st.text_area("Feedback / Comments (Optional)", placeholder="What did they do well? What critical areas need improvement?")
                         
                         st.markdown("<br>", unsafe_allow_html=True)
+                        
+                        # --- CHANGED TO type="secondary" TO MATCH LOG OUT BUTTON ---
                         submit_score = st.form_submit_button("Submit Final Score", type="secondary", use_container_width=True)
                         
                         if submit_score:
