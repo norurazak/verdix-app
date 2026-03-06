@@ -134,7 +134,7 @@ def main():
     # Sidebar Navigation
     menu = st.sidebar.radio("Navigation", ["Student Registration", "Judge Portal", "Leaderboard"])
 
-    # Fetch tracks globally (Uses Track Name to prevent KeyErrors)
+    # Fetch tracks globally
     config_data = ws_config.get_all_records()
     tracks = [str(row["Track Name"]) for row in config_data if row.get("Track Name")]
 
@@ -143,8 +143,8 @@ def main():
     # ---------------------------
     if menu == "Student Registration":
         
-        st.markdown("<h1 style='text-align: center;'>🚀 Startup Registration</h1>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; color: #555555; font-size: 1.1rem;'>Build a compelling, investor-ready profile to unlock access to the pitching platform. Share your vision, traction, team, and growth strategy in a format designed to match VC expectations.</p>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center;'>Startup Registration</h1>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #555555; font-size: 1.1rem;'>Build a compelling, investor-ready profile to unlock access to the pitching platform.</p>", unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
         
         from datetime import datetime
@@ -152,7 +152,7 @@ def main():
         now = datetime.now()
         
         if now > deadline:
-            st.error("🚨 Registration is officially closed.")
+            st.error("Registration is officially closed.")
         else:
             import streamlit.components.v1 as components
             live_clock_html = """
@@ -241,13 +241,12 @@ def main():
             
             submission_type = st.radio(
                 "Submission Type", 
-                ["🆕 New Registration", "🔄 Update Existing Registration"], 
-                horizontal=True,
-                help="If you are updating, make sure to use your exact Team Name so we can replace your old entry."
+                ["New Registration", "Update Existing Registration"], 
+                horizontal=True
             )
 
             with st.container(border=True):
-                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Team & Academic Details</div>", unsafe_allow_html=True)
+                st.markdown("#### Team & Academic Details")
                 
                 col1, col2 = st.columns(2)
                 with col1:
@@ -261,7 +260,7 @@ def main():
                     programme = st.text_input("Academic Programme *", placeholder="E.g., BSc Computer Science")
 
             with st.container(border=True):
-                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Venture Profile</div>", unsafe_allow_html=True)
+                st.markdown("#### Venture Profile")
                 
                 selected_industries = st.multiselect("Industry / Tags (Select up to 3) *", list(industry_dict.keys()))
                 if selected_industries:
@@ -281,9 +280,9 @@ def main():
                 )
             
             with st.container(border=True):
-                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Media & Links</div>", unsafe_allow_html=True)
+                st.markdown("#### Media & Links")
                 
-                st.info("💡 **Security Check:** Please ensure all Google Drive or Canva links are set to 'Anyone with the link can view' before submitting.")
+                st.info("Security Check: Please ensure all Google Drive or Canva links are set to 'Anyone with the link can view' before submitting.")
                 
                 video_link = st.text_input("Pitch Video Link (Optional)", placeholder="YouTube or Vimeo URL")
                 deck_link = st.text_input("Pitch Deck / Logo Link *", placeholder="Google Drive, Canva, or Dropbox URL")
@@ -292,7 +291,7 @@ def main():
             
             _, center_col, _ = st.columns([1, 2, 1])
             with center_col:
-                submitted = st.button("🚀 Submit Registration", type="primary", use_container_width=True)
+                submitted = st.button("Submit Registration", type="primary", use_container_width=True)
             
             if submitted:
                 missing_fields = []
@@ -311,7 +310,7 @@ def main():
                 
                 if missing_fields:
                     missing_str = ", ".join(missing_fields)
-                    st.error(f"⚠️ Please fill in the missing fields: **{missing_str}**")
+                    st.error(f"Please fill in the missing fields: **{missing_str}**")
                 else:
                     industry_string = ", ".join(selected_industries)
                     timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
@@ -334,9 +333,9 @@ def main():
                     ])
                     
                     if "Update" in submission_type:
-                        st.success(f"✅ {team_name}'s profile has been securely updated in the Verdix system.")
+                        st.success(f"{team_name}'s profile has been securely updated in the Verdix system.")
                     else:
-                        st.success(f"✅ {team_name} successfully registered.")
+                        st.success(f"{team_name} successfully registered.")
                         st.info("Your investor profile has been securely logged. The judging panel will review your materials shortly.")
 
     # ---------------------------
@@ -344,7 +343,7 @@ def main():
     # ---------------------------
     elif menu == "Judge Portal":
         
-        st.markdown("<h1 style='text-align: center;'>⚖️ Judge Portal</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center;'>Judge Portal</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #555555; font-size: 1.1rem;'>Review startup profiles and submit your official evaluations.</p>", unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
         
@@ -355,27 +354,27 @@ def main():
 
         if not st.session_state.judge_logged_in:
             with st.container(border=True):
-                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>🔐 Secure Login</div>", unsafe_allow_html=True)
+                st.markdown("#### Secure Login")
                 
-                judge_name_input = st.text_input("👨‍⚖️ Enter Your Full Name")
-                judge_pass_input = st.text_input("🔑 Event Access Code", type="password", help="Enter the shared event password provided by the organizers.")
+                judge_name_input = st.text_input("Enter Your Full Name")
+                judge_pass_input = st.text_input("Event Access Code", type="password")
                 
                 st.markdown("<br>", unsafe_allow_html=True)
                 _, center_col, _ = st.columns([1, 2, 1])
                 with center_col:
                     if st.button("Log In to Portal", type="primary", use_container_width=True):
                         if not judge_name_input:
-                            st.error("⚠️ Please enter your name so we can record your scores.")
+                            st.error("Please enter your name so we can record your scores.")
                         elif judge_pass_input == "verdix2026": 
                             st.session_state.judge_logged_in = True
                             st.session_state.current_judge_name = judge_name_input
                             st.rerun() 
                         else:
-                            st.error("❌ Incorrect Access Code.")
+                            st.error("Incorrect Access Code.")
         else:
             col_name, col_logout = st.columns([3, 1])
             with col_name:
-                st.success(f"✅ Secure Session Active: **{st.session_state.current_judge_name}**")
+                st.success(f"Secure Session Active: **{st.session_state.current_judge_name}**")
             with col_logout:
                 if st.button("Log Out", type="secondary", use_container_width=True):
                     st.session_state.judge_logged_in = False
@@ -385,13 +384,13 @@ def main():
             st.markdown("<br>", unsafe_allow_html=True)
             
             with st.container(border=True):
-                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Startup Selection</div>", unsafe_allow_html=True)
+                st.markdown("#### Startup Selection")
                 
-                selected_track = st.selectbox("📌 Select Track", tracks)
+                selected_track = st.selectbox("Select Track", tracks)
                 
                 teams_data = ws_teams.get_all_records()
                 if not teams_data:
-                    st.warning("⚠️ No teams have registered yet.")
+                    st.warning("No teams have registered yet.")
                 else:
                     df_teams = pd.DataFrame(teams_data)
                     
@@ -404,18 +403,18 @@ def main():
                             st.info(f"No teams found in the {selected_track} track yet.")
                         else:
                             team_list = track_teams['Team Name'].tolist()
-                            selected_team = st.selectbox("🚀 Select Startup to Evaluate", team_list)
+                            selected_team = st.selectbox("Select Startup to Evaluate", team_list)
                             
                             team_info = track_teams[track_teams['Team Name'] == selected_team].iloc[-1] 
                             
                             st.markdown("<br>", unsafe_allow_html=True)
-                            with st.expander(f"📄 View {selected_team}'s Investor Profile", expanded=True):
-                                st.markdown(f"**💡 Value Proposition:** {team_info.get('Value Proposition', 'N/A')}")
-                                st.markdown(f"**🏷️ Industry / Tags:** {team_info.get('Industry / Tags', 'N/A')}")
-                                st.markdown(f"**📈 Current Stage:** {team_info.get('Stage of Startup', 'N/A')}")
+                            with st.expander(f"View {selected_team}'s Investor Profile", expanded=True):
+                                st.markdown(f"**Value Proposition:** {team_info.get('Value Proposition', 'N/A')}")
+                                st.markdown(f"**Industry / Tags:** {team_info.get('Industry / Tags', 'N/A')}")
+                                st.markdown(f"**Current Stage:** {team_info.get('Stage of Startup', 'N/A')}")
                                 st.markdown("---")
-                                st.markdown(f"**👥 Founders:** {team_info.get('Team Leaders (Names)', 'N/A')}")
-                                st.markdown(f"**🎓 Academic Background:** {team_info.get('University / Institution', 'N/A')} - {team_info.get('Faculty / School', 'N/A')}")
+                                st.markdown(f"**Founders:** {team_info.get('Team Leaders (Names)', 'N/A')}")
+                                st.markdown(f"**Academic Background:** {team_info.get('University / Institution', 'N/A')} - {team_info.get('Faculty / School', 'N/A')}")
                                 
                                 st.markdown("<br>", unsafe_allow_html=True)
                                 col_link1, col_link2 = st.columns(2)
@@ -423,17 +422,17 @@ def main():
                                 video_link = team_info.get('Pitch Video Link', '')
                                 
                                 with col_link1:
-                                    if deck_link: st.markdown(f"[🔗 Open Pitch Deck]({deck_link})")
+                                    if deck_link: st.markdown(f"[Open Pitch Deck]({deck_link})")
                                 with col_link2:
-                                    if video_link: st.markdown(f"[🎥 Open Pitch Video]({video_link})")
+                                    if video_link: st.markdown(f"[Open Pitch Video]({video_link})")
                             
             if 'track_teams' in locals() and not track_teams.empty:
                 st.markdown("<br>", unsafe_allow_html=True)
                 with st.container(border=True):
-                    st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Evaluation Rubric</div>", unsafe_allow_html=True)
+                    st.markdown("#### Evaluation Rubric")
                     
                     with st.form("scoring_form"):
-                        st.info("💡 **Hover over the (?) icon next to each criterion for the detailed scoring definition.** Score from 1 (Poor) to 10 (Excellent).")
+                        st.info("Hover over the (?) icon next to each criterion for the detailed scoring definition. Score from 1 (Poor) to 10 (Excellent).")
                         
                         score_1 = st.slider("1. Problem-Solution Fit", 1, 10, 5, help="Does the proposed solution effectively address a clearly defined, highly painful, and significant market problem?")
                         score_2 = st.slider("2. Competitor & Market Analysis", 1, 10, 5, help="Demonstrates a deep understanding of the competitive landscape, target market size (TAM/SAM/SOM), and possesses a clear unfair advantage.")
@@ -447,7 +446,7 @@ def main():
                         comments = st.text_area("Feedback / Comments (Optional)", placeholder="What did they do well? What critical areas need improvement?")
                         
                         st.markdown("<br>", unsafe_allow_html=True)
-                        submit_score = st.form_submit_button("✅ Submit Final Score", type="primary", use_container_width=True)
+                        submit_score = st.form_submit_button("Submit Final Score", type="primary", use_container_width=True)
                         
                         if submit_score:
                             timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
@@ -455,14 +454,14 @@ def main():
                                 timestamp, st.session_state.current_judge_name, selected_team, 
                                 score_1, score_2, score_3, score_4, score_5, score_6, score_7, comments
                             ])
-                            st.success(f"🎉 Evaluation securely logged for {selected_team}! You may now select another startup.")
+                            st.success(f"Evaluation securely logged for {selected_team}! You may now select another startup.")
 
     # ---------------------------
     # MODE 3: LEADERBOARD
     # ---------------------------
     elif menu == "Leaderboard":
         
-        st.markdown("<h1 style='text-align: center;'>🏆 Live Leaderboard</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center;'>Live Leaderboard</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #555555; font-size: 1.1rem;'>Official startup rankings and aggregated judging scores.</p>", unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
 
@@ -471,9 +470,9 @@ def main():
 
         if not st.session_state.admin_logged_in:
             with st.container(border=True):
-                st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>🔒 Admin Access Required</div>", unsafe_allow_html=True)
+                st.markdown("#### Admin Access Required")
                 
-                admin_pass_input = st.text_input("🔑 Organizer Password", type="password", help="Enter the master password to view live scores.")
+                admin_pass_input = st.text_input("Organizer Password", type="password", help="Enter the master password to view live scores.")
                 
                 st.markdown("<br>", unsafe_allow_html=True)
                 _, center_col, _ = st.columns([1, 2, 1])
@@ -483,14 +482,14 @@ def main():
                             st.session_state.admin_logged_in = True
                             st.rerun()
                         else:
-                            st.error("❌ Incorrect Password.")
+                            st.error("Incorrect Password.")
                             
         else:
             col_title, col_logout = st.columns([3, 1])
             with col_title:
-                st.success("✅ Secure Admin Session Active")
+                st.success("Secure Admin Session Active")
             with col_logout:
-                if st.button("🔒 Lock Dashboard", type="secondary", use_container_width=True):
+                if st.button("Lock Dashboard", type="secondary", use_container_width=True):
                     st.session_state.admin_logged_in = False
                     st.rerun()
 
@@ -500,7 +499,7 @@ def main():
             teams_data = ws_teams.get_all_records()
 
             if not scores_data:
-                st.info("📊 No scores have been submitted yet. Waiting for judges...")
+                st.info("No scores have been submitted yet. Waiting for judges...")
             else:
                 df_scores = pd.DataFrame(scores_data)
                 df_teams = pd.DataFrame(teams_data)
@@ -532,8 +531,8 @@ def main():
                         df_scores['Track'] = "Unknown Track"
 
                 with st.container(border=True):
-                    st.markdown("<div style='background-color: #262730; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;'>Filter Results</div>", unsafe_allow_html=True)
-                    selected_view = st.selectbox("🏆 View Leaderboard For:", ["All Tracks"] + tracks)
+                    st.markdown("#### Filter Results")
+                    selected_view = st.selectbox("View Leaderboard For:", ["All Tracks"] + tracks)
 
                 if 'Team Name' in df_scores.columns:
                     leaderboard = df_scores.groupby(['Team Name', 'Track']).agg(
@@ -560,19 +559,19 @@ def main():
 
                         st.markdown("<br>", unsafe_allow_html=True)
                         with st.container(border=True):
-                            st.markdown(f"<div style='background-color: #BF1A1A; color: #FFFFFF; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 15px;'>Top Rankings: {selected_view}</div>", unsafe_allow_html=True)
+                            st.markdown(f"#### Top Rankings: {selected_view}")
 
                             if len(leaderboard) >= 1:
-                                st.success(f"🥇 **1st Place:** {leaderboard.iloc[0]['Startup / Team']} — **{leaderboard.iloc[0]['Avg. Score (Out of 70)']} pts**")
+                                st.success(f"**1st Place:** {leaderboard.iloc[0]['Startup / Team']} — **{leaderboard.iloc[0]['Avg. Score (Out of 70)']} pts**")
                             if len(leaderboard) >= 2:
-                                st.info(f"🥈 **2nd Place:** {leaderboard.iloc[1]['Startup / Team']} — **{leaderboard.iloc[1]['Avg. Score (Out of 70)']} pts**")
+                                st.info(f"**2nd Place:** {leaderboard.iloc[1]['Startup / Team']} — **{leaderboard.iloc[1]['Avg. Score (Out of 70)']} pts**")
                             if len(leaderboard) >= 3:
-                                st.warning(f"🥉 **3rd Place:** {leaderboard.iloc[2]['Startup / Team']} — **{leaderboard.iloc[2]['Avg. Score (Out of 70)']} pts**")
+                                st.warning(f"**3rd Place:** {leaderboard.iloc[2]['Startup / Team']} — **{leaderboard.iloc[2]['Avg. Score (Out of 70)']} pts**")
 
                             st.markdown("<br>", unsafe_allow_html=True)
                             st.dataframe(leaderboard, use_container_width=True)
 
-                            with st.expander("🔍 View Detailed Feedback & Individual Scores"):
+                            with st.expander("View Detailed Feedback & Individual Scores"):
                                 st.markdown("Use this raw data to see exactly who scored what, and read the judges' individual feedback.")
                                 
                                 desired_cols = ['Timestamp', 'Judge Name', 'Team Name', 'Track', 'Total Score', 'Feedback / Comments']
@@ -586,9 +585,9 @@ def main():
                                     
                                     st.dataframe(raw_display, use_container_width=True)
                                 else:
-                                    st.error("⚠️ Database header mismatch. Please check Row 1 of your Scores Google Sheet.")
+                                    st.error("Database header mismatch. Please check Row 1 of your Scores Google Sheet.")
                 else:
-                    st.error("⚠️ Column 'Team Name' is missing from your Scores sheet. Please fix Row 1 in Google Sheets.")
+                    st.error("Column 'Team Name' is missing from your Scores sheet. Please fix Row 1 in Google Sheets.")
 
 if __name__ == "__main__":
     main()
