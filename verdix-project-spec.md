@@ -2,6 +2,13 @@
 
 **Purpose of this document:** This is a complete architecture + decision record for rebuilding Verdix (currently a Streamlit + Google Sheets app) as a Next.js + Supabase app hosted on Vercel. Hand this file to Claude Code as the source of truth for the build. All major product and technical decisions below have already been agreed with the client — do not re-litigate them without flagging the tradeoff explicitly.
 
+> **Addendum (2026-07-30) — Backend pivoted from Supabase to Firebase.** The client hit Supabase's project limit and chose Firebase over the closer like-for-like alternative (Neon+NextAuth). Everywhere below that says "Supabase," "Postgres," "RLS," or "SQL view," read it as superseded:
+> - **Data model**: Firestore (NoSQL/document) replaces the relational schema in §8 — no SQL views, joins, or window functions. Collections mirror the tables below; the `scores` long-format design and any join-heavy queries need rethinking per-collection.
+> - **Standardized score computation** (§6): computed **server-side on read**, in a Next.js Server Action/route handler via the Firebase Admin SDK — not a Cloud Function, to avoid requiring Firebase's paid Blaze plan. Recomputes on each dashboard load rather than being cached.
+> - **RLS → Firestore Security Rules**: same "enforced server-side, not just UI" guarantee (§9), different syntax (per-document path rules, not per-row SQL policies).
+> - **Auth** (§3): Firebase Auth supports magic-link + email/password natively, so this section is unchanged in spirit.
+> - The *product* decisions below (what judges/admins can do, scoring methodology, dashboard flags, build order) are still binding — only the persistence/auth implementation changed.
+
 ---
 
 ## 1. What Verdix Is
