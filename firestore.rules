@@ -1,0 +1,122 @@
+rules_version = '2';
+
+// See verdix-project-spec.md §9 for the confirmed policy direction this
+// implements: judges are fully blind to each other's scores/comments for any
+// team, scoped to only their assigned track(s); admin has full read/write.
+// Enforced here (not just in the UI) so direct API/SDK access can't bypass it.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function myProfile() {
+      return get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && myProfile().role == 'admin';
+    }
+
+    function isJudge() {
+      return isSignedIn() && myProfile().role == 'judge';
+    }
+
+    function isAssignedToTrack(trackId) {
+      return exists(/databases/$(database)/documents/judgeTrackAssignments/$(request.auth.uid + '_' + trackId));
+    }
+
+    function teamTrackId(teamId) {
+      return get(/databases/$(database)/documents/teams/$(teamId)).data.trackId;
+    }
+
+    // profiles/{uid} — admin manages all profiles; a user can read their own.
+    match /profiles/{uid} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
+      allow write: if isAdmin();
+    }
+
+    // tracks/{trackId} — metadata isn't sensitive; any signed-in user can read.
+    match /tracks/{trackId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // teams/{teamId} — judges only see teams in their assigned track(s).
+    match /teams/{teamId} {
+      allow read: if isAdmin() || (isJudge() && isAssignedToTrack(resource.data.trackId));
+      allow write: if isAdmin();
+    }
+
+    // judgeTrackAssignments/{judgeId}_{trackId} — admin-managed; a judge can
+    // read only their own assignment rows.
+    match /judgeTrackAssignments/{id} {
+      allow read: if isAdmin() || (isJudge() && resource.data.judgeId == request.auth.uid);
+      allow write: if isAdmin();
+    }
+
+    // rubricCriteria/{criterionId} — reference data, admin-managed.
+    match /rubricCriteria/{criterionId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // scores/{judgeId}_{teamId}_{criterionId} — the core blindness rule: a
+    // judge can only ever read/write their own scores, never another
+    // judge's, for any team, at any time. No delete — raw scores are an
+    // audit trail; use scoreExclusions to remove a score's impact instead.
+    match /scores/{id} {
+      allow read: if isAdmin() || (isJudge() && resource.data.judgeId == request.auth.uid);
+      allow create: if isJudge()
+        && request.resource.data.judgeId == request.auth.uid
+        && isAssignedToTrack(teamTrackId(request.resource.data.teamId))
+        && request.resource.data.value is int
+        && request.resource.data.value >= 1
+        && request.resource.data.value <= 10;
+      allow update: if isJudge()
+        && resource.data.judgeId == request.auth.uid
+        && request.resource.data.judgeId == resource.data.judgeId
+        && request.resource.data.teamId == resource.data.teamId
+        && request.resource.data.criterionId == resource.data.criterionId
+        && request.resource.data.value is int
+        && request.resource.data.value >= 1
+        && request.resource.data.value <= 10;
+      allow delete: if false;
+    }
+
+    // scoreComments/{judgeId}_{teamId} — same blindness rule as scores.
+    match /scoreComments/{id} {
+      allow read: if isAdmin() || (isJudge() && resource.data.judgeId == request.auth.uid);
+      allow create: if isJudge()
+        && request.resource.data.judgeId == request.auth.uid
+        && isAssignedToTrack(teamTrackId(request.resource.data.teamId));
+      allow update: if isJudge()
+        && resource.data.judgeId == request.auth.uid
+        && request.resource.data.judgeId == resource.data.judgeId
+        && request.resource.data.teamId == resource.data.teamId;
+      allow delete: if false;
+    }
+
+    // scoreExclusions/{id} — admin-only, immutable audit log (create only).
+    match /scoreExclusions/{id} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() && request.resource.data.excludedBy == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // deliberationNotes/{id} — admin-only deliberation dashboard feature.
+    match /deliberationNotes/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // teamReviewStatus/{judgeId}_{teamId} — Prep Mode "reviewed" checkbox;
+    // admin can read all to monitor prep progress, judges manage their own.
+    match /teamReviewStatus/{id} {
+      allow read: if isAdmin() || (isJudge() && resource.data.judgeId == request.auth.uid);
+      allow create, update: if isJudge() && request.resource.data.judgeId == request.auth.uid;
+      allow delete: if false;
+    }
+  }
+}
