@@ -3,6 +3,7 @@ import { adminDb } from "@/lib/firebase/admin";
 import type { Team, Track } from "@/types/firestore";
 import { createTeam, deleteTeam } from "./actions";
 import { TeamForm } from "./team-form";
+import { TeamsCsvImport } from "./csv-import";
 
 export default async function TeamsPage() {
   const [teamsSnap, tracksSnap] = await Promise.all([
@@ -20,6 +21,13 @@ export default async function TeamsPage() {
     id: doc.id,
     ...(doc.data() as Team),
   }));
+
+  const existingNamesByTrack: Record<string, string[]> = {};
+  for (const team of teams) {
+    const trackName = trackNameById.get(team.trackId);
+    if (!trackName) continue;
+    (existingNamesByTrack[trackName] ??= []).push(team.teamName);
+  }
 
   return (
     <div className="space-y-8">
@@ -43,6 +51,13 @@ export default async function TeamsPage() {
           </details>
         )}
       </div>
+
+      {tracks.length > 0 && (
+        <TeamsCsvImport
+          trackNames={tracks.map((t) => t.name)}
+          existingNamesByTrack={existingNamesByTrack}
+        />
+      )}
 
       <div className="space-y-2">
         {teams.length === 0 && (
