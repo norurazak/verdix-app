@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { adminDb } from "@/lib/firebase/admin";
 import { requireJudge } from "@/lib/auth/session";
@@ -100,14 +101,22 @@ export default async function JudgeTeamPage({
         )}
       </div>
 
-      <form action={setReviewed.bind(null, id, !reviewed)}>
-        <button
-          type="submit"
+      <div className="flex items-center gap-4">
+        <Link
+          href={`/judge/teams/${id}/score`}
           className="rounded bg-black px-4 py-2 text-sm text-white dark:bg-white dark:text-black"
         >
-          {reviewed ? "✅ Reviewed — mark not reviewed" : "Mark as reviewed"}
-        </button>
-      </form>
+          Score this team
+        </Link>
+        <form action={setReviewed.bind(null, id, !reviewed)}>
+          <button
+            type="submit"
+            className="text-sm text-zinc-600 hover:underline dark:text-zinc-400"
+          >
+            {reviewed ? "✅ Reviewed — mark not reviewed" : "Mark as reviewed"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

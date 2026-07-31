@@ -79,14 +79,22 @@ export default async function JudgePrepPage() {
                   {team.stage ? ` · ${team.stage}` : ""}
                 </p>
               </div>
-              <form action={setReviewed.bind(null, team.id, !reviewed)}>
-                <button
-                  type="submit"
+              <div className="flex items-center gap-4">
+                <Link
+                  href={`/judge/teams/${team.id}/score`}
                   className="text-sm text-zinc-600 hover:underline dark:text-zinc-400"
                 >
-                  {reviewed ? "✅ Reviewed" : "Mark reviewed"}
-                </button>
-              </form>
+                  Score
+                </Link>
+                <form action={setReviewed.bind(null, team.id, !reviewed)}>
+                  <button
+                    type="submit"
+                    className="text-sm text-zinc-600 hover:underline dark:text-zinc-400"
+                  >
+                    {reviewed ? "✅ Reviewed" : "Mark reviewed"}
+                  </button>
+                </form>
+              </div>
             </div>
           );
         })}
