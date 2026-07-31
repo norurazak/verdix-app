@@ -57,8 +57,20 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // rubrics/{rubricId} — a library of rubric templates, admin-managed.
+    match /rubrics/{rubricId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
     // rubricCriteria/{criterionId} — reference data, admin-managed.
     match /rubricCriteria/{criterionId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // settings/{id} — event-wide config (e.g. active rubric), admin-managed.
+    match /settings/{id} {
       allow read: if isSignedIn();
       allow write: if isAdmin();
     }
@@ -73,16 +85,16 @@ service cloud.firestore {
         && request.resource.data.judgeId == request.auth.uid
         && isAssignedToTrack(teamTrackId(request.resource.data.teamId))
         && request.resource.data.value is int
-        && request.resource.data.value >= 1
-        && request.resource.data.value <= 10;
+        && request.resource.data.value >= 0
+        && request.resource.data.value <= 5;
       allow update: if isJudge()
         && resource.data.judgeId == request.auth.uid
         && request.resource.data.judgeId == resource.data.judgeId
         && request.resource.data.teamId == resource.data.teamId
         && request.resource.data.criterionId == resource.data.criterionId
         && request.resource.data.value is int
-        && request.resource.data.value >= 1
-        && request.resource.data.value <= 10;
+        && request.resource.data.value >= 0
+        && request.resource.data.value <= 5;
       allow delete: if false;
     }
 

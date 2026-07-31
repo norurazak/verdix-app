@@ -24,7 +24,16 @@ export async function submitScore(teamId: string, formData: FormData) {
     throw new Error("Not assigned to this team's track");
   }
 
-  const criteriaSnap = await adminDb.collection("rubricCriteria").get();
+  const settingsSnap = await adminDb.collection("settings").doc("event").get();
+  const activeRubricId = settingsSnap.data()?.activeRubricId as
+    | string
+    | undefined;
+  if (!activeRubricId) throw new Error("No active rubric set");
+
+  const criteriaSnap = await adminDb
+    .collection("rubricCriteria")
+    .where("rubricId", "==", activeRubricId)
+    .get();
   const criterionIds = criteriaSnap.docs.map((doc) => doc.id);
 
   const batch = adminDb.batch();
@@ -32,7 +41,7 @@ export async function submitScore(teamId: string, formData: FormData) {
     const raw = formData.get(`criterion_${criterionId}`);
     if (raw === null) continue;
     const value = Number(raw);
-    if (!Number.isInteger(value) || value < 1 || value > 10) {
+    if (!Number.isInteger(value) || value < 0 || value > 5) {
       throw new Error(`Invalid score for criterion ${criterionId}`);
     }
     const ref = adminDb

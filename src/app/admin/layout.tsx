@@ -36,10 +36,10 @@ export default async function AdminLayout({
               Judges
             </Link>
             <Link
-              href="/admin/rubric"
+              href="/admin/rubrics"
               className="text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white"
             >
-              Rubric
+              Rubrics
             </Link>
           </nav>
         </div>

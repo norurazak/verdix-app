@@ -49,11 +49,35 @@ export interface JudgeTrackAssignment {
   trackId: string;
 }
 
-/** rubricCriteria/{criterionId} */
+/**
+ * rubrics/{rubricId} — a named, reusable rubric template. Admin can maintain
+ * a library of these and pick one as the event's active rubric (see
+ * EventSettings) — teams are always scored against whichever is active.
+ */
+export interface Rubric {
+  name: string;
+  createdAt: Timestamp;
+}
+
+/** Per-band descriptive text shown alongside the 0-5 score while scoring. */
+export interface RubricCriterionBands {
+  weak: string; // 0-2
+  moderate: string; // 3-4
+  excellent: string; // 5
+}
+
+/** rubricCriteria/{criterionId} — belongs to exactly one rubric. */
 export interface RubricCriterion {
+  rubricId: string;
   label: string;
-  description: string;
+  weight: number; // percentage, criteria within a rubric should sum to ~100
+  bands: RubricCriterionBands;
   sortOrder: number;
+}
+
+/** settings/event — singleton doc for event-wide config. */
+export interface EventSettings {
+  activeRubricId: string | null;
 }
 
 /** scores/{judgeId}_{teamId}_{criterionId} — long format, one doc per (judge, team, criterion). */
@@ -61,7 +85,7 @@ export interface Score {
   judgeId: string;
   teamId: string;
   criterionId: string;
-  value: number; // 1-10
+  value: number; // 0-5
   createdAt: Timestamp;
 }
 

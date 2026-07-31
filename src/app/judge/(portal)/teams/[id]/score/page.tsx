@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { adminDb } from "@/lib/firebase/admin";
 import { requireJudge } from "@/lib/auth/session";
 import type {
+  EventSettings,
   RubricCriterion,
   Score,
   ScoreComment,
@@ -28,8 +29,25 @@ export default async function ScoreTeamPage({
     .get();
   if (!assignmentSnap.exists) notFound();
 
+  const settingsSnap = await adminDb.collection("settings").doc("event").get();
+  const activeRubricId =
+    (settingsSnap.data() as EventSettings | undefined)?.activeRubricId ?? null;
+
+  if (!activeRubricId) {
+    return (
+      <p className="text-sm text-zinc-500">
+        The organizer hasn&apos;t set an active rubric yet — check back
+        later.
+      </p>
+    );
+  }
+
   const [criteriaSnap, scoresSnap, commentsSnap] = await Promise.all([
-    adminDb.collection("rubricCriteria").orderBy("sortOrder").get(),
+    adminDb
+      .collection("rubricCriteria")
+      .where("rubricId", "==", activeRubricId)
+      .orderBy("sortOrder")
+      .get(),
     adminDb
       .collection("scores")
       .where("judgeId", "==", user.uid)
@@ -54,7 +72,7 @@ export default async function ScoreTeamPage({
   if (criteria.length === 0) {
     return (
       <p className="text-sm text-zinc-500">
-        The organizer hasn&apos;t set up the rubric yet — check back later.
+        The active rubric has no criteria yet — check back later.
       </p>
     );
   }
