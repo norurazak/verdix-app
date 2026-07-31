@@ -1,42 +1,30 @@
 import Link from "next/link";
-import { requireAdmin } from "@/lib/auth/session";
+import { requireJudge } from "@/lib/auth/session";
 import { LogoutButton } from "@/components/logout-button";
 
-export default async function AdminLayout({
+export default async function JudgePortalLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await requireAdmin();
+  const user = await requireJudge();
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       <header className="flex items-center justify-between border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
         <div className="flex items-center gap-6">
           <span className="font-semibold text-black dark:text-zinc-50">
-            Verdix Admin
+            Verdix Judge
           </span>
           <nav className="flex items-center gap-4 text-sm">
             <Link
-              href="/admin/tracks"
-              className="text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white"
-            >
-              Tracks
-            </Link>
-            <Link
-              href="/admin/teams"
+              href="/judge"
               className="text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white"
             >
               Teams
             </Link>
             <Link
-              href="/admin/judges"
-              className="text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white"
-            >
-              Judges
-            </Link>
-            <Link
-              href="/admin/rubric"
+              href="/judge/rubric"
               className="text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white"
             >
               Rubric
@@ -45,7 +33,7 @@ export default async function AdminLayout({
         </div>
         <div className="flex items-center gap-4 text-sm">
           <span className="text-zinc-500">{user.name}</span>
-          <LogoutButton redirectTo="/login" />
+          <LogoutButton redirectTo="/judge/login" />
         </div>
       </header>
       <main className="p-6">{children}</main>

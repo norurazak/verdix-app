@@ -32,3 +32,15 @@ export async function requireAdmin(): Promise<SessionUser> {
   }
   return user;
 }
+
+/** Server Components/Actions call this to gate judge-only pages and mutations. */
+export async function requireJudge(): Promise<SessionUser> {
+  const user = await getSessionUser();
+  if (!user) {
+    redirect("/judge/login");
+  }
+  if (user.role !== "judge") {
+    redirect("/judge/login?denied=1");
+  }
+  return user;
+}
