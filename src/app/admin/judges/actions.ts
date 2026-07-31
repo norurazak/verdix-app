@@ -38,14 +38,24 @@ async function syncTrackAssignments(judgeId: string, trackIds: string[]) {
   await batch.commit();
 }
 
-async function upsertJudge(name: string, email: string, trackIds: string[]) {
+async function upsertJudge(
+  name: string,
+  email: string,
+  trackIds: string[],
+  password?: string,
+) {
   let uid: string;
   try {
     const existing = await adminAuth.getUserByEmail(email);
     uid = existing.uid;
+    if (password) {
+      await adminAuth.updateUser(uid, { password });
+    }
   } catch (err) {
     if ((err as { code?: string }).code === "auth/user-not-found") {
-      const created = await adminAuth.createUser({ email });
+      const created = await adminAuth.createUser(
+        password ? { email, password } : { email },
+      );
       uid = created.uid;
     } else {
       throw err;
@@ -65,12 +75,13 @@ export async function createJudge(formData: FormData) {
   await requireAdmin();
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
+  const password = String(formData.get("password") ?? "").trim();
   const trackIds = trackIdsFromForm(formData);
 
   if (!name) throw new Error("Name is required");
   if (!email) throw new Error("Email is required");
 
-  await upsertJudge(name, email, trackIds);
+  await upsertJudge(name, email, trackIds, password || undefined);
 
   revalidatePath("/admin/judges");
 }
@@ -79,12 +90,13 @@ export async function updateJudge(uid: string, formData: FormData) {
   await requireAdmin();
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
+  const password = String(formData.get("password") ?? "").trim();
   const trackIds = trackIdsFromForm(formData);
 
   if (!name) throw new Error("Name is required");
   if (!email) throw new Error("Email is required");
 
-  await adminAuth.updateUser(uid, { email });
+  await adminAuth.updateUser(uid, password ? { email, password } : { email });
   await adminDb.collection("profiles").doc(uid).update({ name, email });
   await syncTrackAssignments(uid, trackIds);
 

@@ -43,6 +43,25 @@ export function JudgeForm({
       </div>
 
       <div className="space-y-1">
+        <label className={labelClass} htmlFor="password">
+          Password (optional)
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="Leave blank to keep magic-link-only sign-in"
+          minLength={6}
+          className={inputClass}
+        />
+        <p className="text-xs text-zinc-500">
+          Judges normally sign in via a magic link emailed to them. Set a
+          password here as a fallback if email delivery is unreliable — the
+          judge can then sign in with either method.
+        </p>
+      </div>
+
+      <div className="space-y-1">
         <span className={labelClass}>Assigned track(s)</span>
         <div className="space-y-1">
           {tracks.length === 0 && (
