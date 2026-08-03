@@ -78,6 +78,10 @@ export interface RubricCriterion {
 /** settings/event — singleton doc for event-wide config. */
 export interface EventSettings {
   activeRubricId: string | null;
+  /** Score-spread (population stdev of raw totals) above which a team gets the Disagreement Flag. */
+  disagreementThreshold: number;
+  /** Standardized-score gap to the rank above/below within which a team gets the Close-Call Flag. */
+  closeCallMargin: number;
 }
 
 /** scores/{judgeId}_{teamId}_{criterionId} — long format, one doc per (judge, team, criterion). */
@@ -97,9 +101,14 @@ export interface ScoreComment {
   createdAt: Timestamp;
 }
 
-/** scoreExclusions/{id} — immutable audit log, admin-only. */
+/**
+ * scoreExclusions/{judgeId}_{teamId} — admin override excluding one judge's
+ * entire scoring of one team from aggregation (e.g. confirmed judge error).
+ * Immutable audit log: create-only, never edited/deleted (see firestore.rules).
+ */
 export interface ScoreExclusion {
-  scoreId: string;
+  judgeId: string;
+  teamId: string;
   excludedBy: string;
   reason: string;
   excludedAt: Timestamp;

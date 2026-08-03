@@ -41,6 +41,12 @@ export default async function AdminLayout({
             >
               Rubrics
             </Link>
+            <Link
+              href="/admin/dashboard"
+              className="text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white"
+            >
+              Dashboard
+            </Link>
           </nav>
         </div>
         <div className="flex items-center gap-4 text-sm">

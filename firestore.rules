@@ -111,7 +111,10 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // scoreExclusions/{id} — admin-only, immutable audit log (create only).
+    // scoreExclusions/{judgeId}_{teamId} — admin-only audit log. Client SDK
+    // can only create (never tamper with an existing entry); removing an
+    // exclusion happens only through the admin dashboard's Server Action,
+    // which uses the Admin SDK and so isn't subject to this rule at all.
     match /scoreExclusions/{id} {
       allow read: if isAdmin();
       allow create: if isAdmin() && request.resource.data.excludedBy == request.auth.uid;
