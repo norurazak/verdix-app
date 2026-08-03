@@ -44,7 +44,7 @@ export default async function JudgeTeamPage({
         </p>
       </div>
 
-      <dl className="grid grid-cols-2 gap-4 text-sm">
+      <dl className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
         <div>
           <dt className="text-zinc-500">Team leaders</dt>
           <dd className="text-black dark:text-zinc-50">
@@ -101,7 +101,7 @@ export default async function JudgeTeamPage({
         )}
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4">
         <Link
           href={`/judge/teams/${id}/score`}
           className="rounded bg-black px-4 py-2 text-sm text-white dark:bg-white dark:text-black"

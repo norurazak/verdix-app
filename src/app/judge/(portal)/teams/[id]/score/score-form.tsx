@@ -45,7 +45,7 @@ export function ScoreForm({
         const band = bandForValue(value);
         return (
           <div key={criterion.id} className="space-y-1">
-            <div className="flex items-baseline justify-between">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
               <label
                 htmlFor={`criterion_${criterion.id}`}
                 className="font-medium text-black dark:text-zinc-50"

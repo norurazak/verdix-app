@@ -65,7 +65,7 @@ export default async function JudgePrepPage() {
           return (
             <div
               key={team.id}
-              className="flex items-center justify-between border-b border-zinc-100 py-2 dark:border-zinc-900"
+              className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 py-2 dark:border-zinc-900"
             >
               <div>
                 <Link

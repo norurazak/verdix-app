@@ -15,7 +15,7 @@ export function TeamForm({
 }) {
   return (
     <div className="grid max-w-2xl gap-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1">
           <label className={labelClass} htmlFor="teamName">
             Team name
@@ -51,7 +51,7 @@ export function TeamForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1">
           <label className={labelClass} htmlFor="teamLeaders">
             Team leaders
@@ -76,7 +76,7 @@ export function TeamForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="space-y-1">
           <label className={labelClass} htmlFor="university">
             University
@@ -112,7 +112,7 @@ export function TeamForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1">
           <label className={labelClass} htmlFor="industries">
             Industries (comma-separated)
@@ -150,7 +150,7 @@ export function TeamForm({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1">
           <label className={labelClass} htmlFor="videoLink">
             Video link (optional)

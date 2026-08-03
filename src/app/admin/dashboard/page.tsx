@@ -22,7 +22,7 @@ function TeamRow({ team, showTrack }: { team: RankedTeamScore; showTrack: boolea
       <td className="py-2 pr-3">
         {team.rank !== null && team.rank <= 3 ? MEDALS[team.rank - 1] : team.rank ?? "—"}
       </td>
-      <td className="py-2 pr-3">
+      <td className="py-2 pr-3 whitespace-nowrap">
         <Link
           href={`/admin/dashboard/${team.teamId}`}
           className="text-black hover:underline dark:text-zinc-50"
@@ -35,7 +35,7 @@ function TeamRow({ team, showTrack }: { team: RankedTeamScore; showTrack: boolea
           </span>
         )}
       </td>
-      {showTrack && <td className="py-2 pr-3 text-zinc-500">{team.trackName}</td>}
+      {showTrack && <td className="py-2 pr-3 whitespace-nowrap text-zinc-500">{team.trackName}</td>}
       <td className="py-2 pr-3 text-zinc-700 dark:text-zinc-300">{fmt(team.rawAverage)}</td>
       <td className="py-2 pr-3 text-zinc-700 dark:text-zinc-300">{fmt(team.standardizedScore, 2)}</td>
       <td className="py-2 pr-3 text-zinc-500">{team.percentile !== null ? `${team.percentile}%` : "—"}</td>
@@ -155,18 +155,18 @@ export default async function DashboardPage({
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
+        <table className="text-left text-sm">
           <thead>
             <tr className="border-b border-zinc-200 text-zinc-500 dark:border-zinc-800">
-              <th className="py-2 pr-3 font-medium">#</th>
-              <th className="py-2 pr-3 font-medium">Team</th>
-              {!trackFilter && <th className="py-2 pr-3 font-medium">Track</th>}
-              <th className="py-2 pr-3 font-medium">Raw Avg</th>
-              <th className="py-2 pr-3 font-medium">Standardized</th>
-              <th className="py-2 pr-3 font-medium">Percentile</th>
-              <th className="py-2 pr-3 font-medium">Judges</th>
-              <th className="py-2 pr-3 font-medium">Spread</th>
-              <th className="py-2 font-medium">Flags</th>
+              <th className="py-2 pr-3 font-medium whitespace-nowrap">#</th>
+              <th className="py-2 pr-3 font-medium whitespace-nowrap">Team</th>
+              {!trackFilter && <th className="py-2 pr-3 font-medium whitespace-nowrap">Track</th>}
+              <th className="py-2 pr-3 font-medium whitespace-nowrap">Raw Avg</th>
+              <th className="py-2 pr-3 font-medium whitespace-nowrap">Standardized</th>
+              <th className="py-2 pr-3 font-medium whitespace-nowrap">Percentile</th>
+              <th className="py-2 pr-3 font-medium whitespace-nowrap">Judges</th>
+              <th className="py-2 pr-3 font-medium whitespace-nowrap">Spread</th>
+              <th className="py-2 font-medium whitespace-nowrap">Flags</th>
             </tr>
           </thead>
           <tbody>

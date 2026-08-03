@@ -128,12 +128,12 @@ export default async function TeamDeliberationPage({
       <section className="space-y-3">
         <h2 className="text-sm font-medium text-zinc-500">Scores by judge</h2>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
+          <table className="text-left text-sm">
             <thead>
               <tr className="border-b border-zinc-200 text-zinc-500 dark:border-zinc-800">
-                <th className="py-2 pr-3 font-medium">Judge</th>
+                <th className="py-2 pr-3 font-medium whitespace-nowrap">Judge</th>
                 {criteria.map((c) => (
-                  <th key={c.id} className="py-2 pr-3 font-medium">
+                  <th key={c.id} className="py-2 pr-3 font-medium whitespace-nowrap">
                     {c.label}
                   </th>
                 ))}
@@ -157,7 +157,7 @@ export default async function TeamDeliberationPage({
                     key={judgeId}
                     className={`border-b border-zinc-100 dark:border-zinc-900 ${excluded ? "opacity-50" : ""}`}
                   >
-                    <td className="py-2 pr-3 text-black dark:text-zinc-50">
+                    <td className="py-2 pr-3 whitespace-nowrap text-black dark:text-zinc-50">
                       {judgeNameById.get(judgeId) ?? judgeId}
                       {excluded && (
                         <span className="ml-2 text-xs text-red-600">

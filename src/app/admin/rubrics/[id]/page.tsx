@@ -59,21 +59,21 @@ export default async function RubricCriteriaPage({
           action={createCriterion.bind(null, id)}
           className="mt-4 grid max-w-xl gap-3"
         >
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <input name="label" placeholder="Label" required className={`flex-1 ${inputClass}`} />
             <input
               name="weight"
               type="number"
               step="0.01"
               placeholder="Weight %"
-              className={`w-28 ${inputClass}`}
+              className={`w-full sm:w-28 ${inputClass}`}
             />
             <input
               name="sortOrder"
               type="number"
               placeholder="Order"
               defaultValue={criteria.length + 1}
-              className={`w-20 ${inputClass}`}
+              className={`w-full sm:w-20 ${inputClass}`}
             />
           </div>
           <textarea
@@ -113,7 +113,7 @@ export default async function RubricCriteriaPage({
             action={updateCriterion.bind(null, id, criterion.id)}
             className="grid max-w-xl gap-3 rounded border border-zinc-200 p-4 dark:border-zinc-800"
           >
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row">
               <input
                 name="label"
                 defaultValue={criterion.label}
@@ -125,13 +125,13 @@ export default async function RubricCriteriaPage({
                 type="number"
                 step="0.01"
                 defaultValue={criterion.weight}
-                className={`w-28 ${inputClass}`}
+                className={`w-full sm:w-28 ${inputClass}`}
               />
               <input
                 name="sortOrder"
                 type="number"
                 defaultValue={criterion.sortOrder}
-                className={`w-20 ${inputClass}`}
+                className={`w-full sm:w-20 ${inputClass}`}
               />
             </div>
             <textarea

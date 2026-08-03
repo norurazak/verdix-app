@@ -43,7 +43,7 @@ export default async function JudgeRubricPage() {
           key={criterion.id}
           className="space-y-2 border-b border-zinc-100 pb-4 dark:border-zinc-900"
         >
-          <div className="flex items-baseline justify-between">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
             <p className="font-medium text-black dark:text-zinc-50">
               {criterion.label}
             </p>
