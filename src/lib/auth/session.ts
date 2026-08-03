@@ -27,8 +27,11 @@ export async function getSessionUser(): Promise<SessionUser | null> {
 /** Server Components/Actions call this to gate admin-only pages and mutations. */
 export async function requireAdmin(): Promise<SessionUser> {
   const user = await getSessionUser();
-  if (!user || user.role !== "admin") {
+  if (!user) {
     redirect("/login");
+  }
+  if (user.role !== "admin") {
+    redirect("/login?denied=1");
   }
   return user;
 }
